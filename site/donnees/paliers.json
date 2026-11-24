@@ -20,14 +20,10 @@
         { "sujet": "La biodiversité", "gauche": 868, "y": 230 },
         { "sujet": "La population humaine", "gauche": 888, "y": 340 },
         { "sujet": "L'empreinte des humains", "gauche": 888, "y": 450 },
-        { "sujet": "Le changement climatique", "gauche": 868, "y": 560 },
-        { "nom": "À qui est la Lune", "sujet": "Mers, pôles et espace", "gauche": 1040, "y": 120 }
+        { "sujet": "Le changement climatique", "gauche": 868, "y": 560 }
       ],
-      "lieux": [
-        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -32, "lat": 24 },
-        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -145, "lat": 6 },
-        { "nom": "À qui est l'Antarctique", "sujet": "Mers, pôles et espace", "lon": 25, "lat": -72 }
-      ],
+      "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier du monde.",
+      "lieux": [],
       "titre": "Comment habiter la Terre ?",
       "sousTitre": "Fais tourner la Terre, puis zoome pour descendre jusqu'à ta maison."
     },
@@ -37,7 +33,10 @@
       "aria": "La Terre et ses États. Glisse pour la faire tourner, clique sur un pays pour l'ouvrir.",
       "lieux": [
         { "nom": "L'ONU et ses agences", "sujet": "L'ONU et ses agences", "lon": -73.968, "lat": 40.749 },
-        { "nom": "La justice internationale", "sujet": "La justice internationale", "lon": 4.3, "lat": 52.08 }
+        { "nom": "La justice internationale", "sujet": "La justice internationale", "lon": 4.3, "lat": 52.08 },
+        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -40, "lat": 22, "gauche": true },
+        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -145, "lat": 6 },
+        { "nom": "À qui est l'Antarctique", "sujet": "Mers, pôles et espace", "lon": 25, "lat": -72 }
       ],
       "coteAuto": 0.2,
       "calques": [{ "repere": "o", "nom": "Montrer l'OTAN · 32 pays" }],
