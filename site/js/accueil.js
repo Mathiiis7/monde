@@ -37,16 +37,28 @@ class Accueil {
     this.suivreAdresse();
   }
 
-  // La scène garde 1280 x 800 et s'agrandit ou se réduit pour tenir dans la fenêtre.
+  // La carte est dessinée sur 1280 x 800 et s'agrandit ou se réduit pour tenir dans la fenêtre (échelle s). La scène,
+  // elle, couvre toute la fenêtre (W x H en pixels de la carte) : les barres collent aux bords, et le cadre de la carte
+  // est centré, à dx et dy des bords (demande du 24/11/2026 : plus de bandes vides en haut et en bas).
   ajuster() {
     this.s = Math.min(innerWidth / 1280, innerHeight / 800);
-    this.scene.style.setProperty("--s", this.s);
+    this.W = innerWidth / this.s; this.H = innerHeight / this.s;
+    this.dx = (this.W - 1280) / 2; this.dy = (this.H - 800) / 2;
+    const st = this.scene.style;
+    st.setProperty("--s", this.s);
+    st.setProperty("--w", this.W + "px"); st.setProperty("--h", this.H + "px");
+    st.setProperty("--dx", this.dx + "px"); st.setProperty("--dy", this.dy + "px");
   }
 
-  // Un point de l'écran, en pixels de la scène.
+  // Un point de l'écran, en pixels de la carte (le cadre de 1280 x 800).
   point(ev) {
-    const r = this.scene.getBoundingClientRect(), k = 1280 / r.width;
-    return { x: (ev.clientX - r.left) * k, y: (ev.clientY - r.top) * k };
+    const r = this.scene.getBoundingClientRect(), k = this.k();
+    return { x: (ev.clientX - r.left) * k - this.dx, y: (ev.clientY - r.top) * k - this.dy };
+  }
+
+  // Combien de pixels de la carte pour un pixel de l'écran.
+  k() {
+    return this.W / this.scene.getBoundingClientRect().width;
   }
 
   construireCadre() {
@@ -117,7 +129,7 @@ class Accueil {
     const appli = {
       depart, territoires: this.reglages.territoires,
       ouvrirSujet: (nom) => this.ouvrirSujet(nom), ouvrirListe: () => this.ouvrirListe(),
-      aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => 1280 / this.scene.getBoundingClientRect().width
+      aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => this.k()
     };
     const ancien = this.objet, ancienne = this.couche;
     // d'un globe à un globe : le nouveau part de l'image exacte de l'ancien et vole jusqu'à la sienne (un vrai zoom)

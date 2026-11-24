@@ -1,5 +1,7 @@
 /* Monde : charte propre (choisie le 19/11/2026). L'interface en noir et blanc, la couleur vient de la carte.
-   Titres en Newsreader, texte en Public Sans. La scène fait 1280 x 800 et s'agrandit ou se réduit à la fenêtre. */
+   Titres en Newsreader, texte en Public Sans. La carte est dessinée sur 1280 x 800, agrandie ou réduite à la fenêtre ;
+   la scène, elle, couvre toute la fenêtre (24/11/2026) : les barres collent aux bords et la carte déborde du cadre.
+   --dx et --dy (posés par accueil.js) : la marge entre le cadre de 1280 x 800, centré, et les bords de la fenêtre. */
 
 /* Les polices, hébergées dans site/polices/ (licence OFL, outils/site/telecharger-polices.sh) : des polices variables,
    un fichier par alphabet couvre toutes les graisses. Le fichier « latin-ext » ne se charge que si une page en a besoin. */
@@ -59,11 +61,12 @@ html.carte .sommaire { display: none; }
 html.carte, html.carte body { height: 100%; overflow: hidden; }
 
 /* ---- La scène ---- */
-.scene { position: fixed; left: 50%; top: 50%; width: 1280px; height: 800px; overflow: hidden; background: var(--fond);
+.scene { position: fixed; left: 50%; top: 50%; width: var(--w, 1280px); height: var(--h, 800px); overflow: hidden; background: var(--fond);
   transform: translate(-50%, -50%) scale(var(--s, 1)); }
-.couche { position: absolute; inset: 0; transform-origin: 50% 50%; }
+/* un palier : le cadre de 1280 x 800 au centre de la scène ; ce qui doit coller aux bords retire --dx ou --dy */
+.couche { position: absolute; left: var(--dx, 0px); top: var(--dy, 0px); width: 1280px; height: 800px; transform-origin: 50% 50%; }
 .scene button { font-family: var(--sans); }
-.scene svg.carte { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; }
+.scene svg.carte { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; overflow: visible; }
 .scene svg.carte.glisse { cursor: grab; touch-action: none; user-select: none; }
 .scene svg.carte.glisse:active { cursor: grabbing; }
 .chargement { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--encre-2); font-size: 14px; }
@@ -123,23 +126,23 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .fermer:hover { color: var(--encre); }
 
 /* Les boîtes du bas et des côtés */
-.bas { position: absolute; left: 214px; bottom: 22px; max-width: 330px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
-.bas.haut { bottom: auto; top: 84px; max-width: 440px; background: rgb(22 25 29 / .92); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); }
+.bas { position: absolute; left: calc(214px - var(--dx, 0px)); bottom: calc(22px - var(--dy, 0px)); max-width: 330px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
+.bas.haut { bottom: auto; top: calc(84px - var(--dy, 0px)); max-width: 440px; background: rgb(22 25 29 / .92); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); }
 .calques { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 14px; }
 .calques button { min-height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--filet); background: var(--surface); color: var(--encre); font-size: 14px; cursor: pointer; }
 .calques button.on { background: var(--encre); border-color: var(--encre); color: var(--fond); font-weight: 600; }
 .calques .ensuite { color: var(--encre-2); }
 .legende { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--encre-2); }
 .legende span { display: inline-flex; align-items: center; gap: 8px; }
-.vue { position: absolute; right: 24px; bottom: 96px; width: 250px; margin: 0; font-size: 13px; line-height: 1.5; color: var(--encre-2); z-index: 2; }
+.vue { position: absolute; right: calc(24px - var(--dx, 0px)); bottom: calc(96px - var(--dy, 0px)); width: 250px; margin: 0; font-size: 13px; line-height: 1.5; color: var(--encre-2); z-index: 2; }
 .vue.boite { background: rgb(22 25 29 / .92); padding: 12px 14px; border-radius: 12px; box-shadow: var(--ombre); }
 .vue p { margin: 0; }
 .vue .legende { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--filet); }
 .vue b, .boite-plan b { color: var(--encre); }
-.tour { position: absolute; right: 24px; bottom: 24px; display: flex; gap: 6px; align-items: center; padding: 6px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 2; }
+.tour { position: absolute; right: calc(24px - var(--dx, 0px)); bottom: calc(24px - var(--dy, 0px)); display: flex; gap: 6px; align-items: center; padding: 6px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 2; }
 .tour span { font-size: 13.5px; color: var(--encre-2); padding: 0 6px 0 8px; }
 .tour button { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--filet); background: var(--releve); color: var(--encre); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
-.om { position: absolute; left: 196px; bottom: 22px; width: 470px; box-sizing: border-box; background: rgb(22 25 29 / .94); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); display: flex; flex-direction: column; gap: 10px; z-index: 3; }
+.om { position: absolute; left: calc(196px - var(--dx, 0px)); bottom: calc(22px - var(--dy, 0px)); width: 470px; box-sizing: border-box; background: rgb(22 25 29 / .94); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); display: flex; flex-direction: column; gap: 10px; z-index: 3; }
 .om .t { font-family: var(--titre); font-size: 19px; font-weight: 600; }
 .om-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .om button { min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--filet); background: var(--releve); color: var(--encre); font-size: 13px; text-align: left; cursor: pointer; }
@@ -147,7 +150,7 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .boite-plan .t { font-family: var(--titre); font-size: 19px; font-weight: 600; }
 
 /* Les panneaux : la liste des sujets d'une échelle, une fiche */
-.pan { position: absolute; right: 24px; top: 78px; width: 320px; max-height: 698px; overflow: auto; background: var(--surface); border-radius: 12px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: var(--ombre); z-index: 6; }
+.pan { position: absolute; right: 24px; top: 78px; width: 320px; max-height: calc(100% - 102px); overflow: auto; background: var(--surface); border-radius: 12px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; box-shadow: var(--ombre); z-index: 6; }
 .pan .petit { font-size: 13px; color: var(--encre-2); }
 .pan .t { font-family: var(--titre); font-size: 26px; font-weight: 500; margin: 2px 0 10px; }
 .pan .lien { font-size: 14.5px; font-weight: 400; padding: 7px 0; }

@@ -9,7 +9,10 @@
 <link rel="icon" href="site/icone.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="site/icone-180.png">
 <link rel="stylesheet" href="site/styles.css">
-<script type="module" src="site/js/accueil.js"></script>
+<!-- La carte va s'afficher : cacher tout de suite la liste des sujets (la version sans JavaScript), sinon elle apparaît
+     le temps du chargement. Si le code de la carte ne se charge pas, accueil.js ou onerror remettent la liste. -->
+<script>if ("noModule" in HTMLScriptElement.prototype) document.documentElement.classList.add("carte");</script>
+<script type="module" src="site/js/accueil.js" onerror="document.documentElement.classList.remove('carte')"></script>
 </head>
 <body>
 
