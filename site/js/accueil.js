@@ -9,7 +9,9 @@ const BASE = new URL("../", import.meta.url);
 const memoire = new Map();
 function charger(chemin, texte = false) {
   if (!memoire.has(chemin)) {
-    memoire.set(chemin, fetch(new URL(chemin, BASE)).then((r) => {
+    // « no-cache » : le navigateur redemande au serveur si le fichier a changé (sinon GitHub lui laisse garder
+    // l'ancienne version 10 minutes, même après un rechargement) ; s'il n'a pas changé, rien n'est retéléchargé.
+    memoire.set(chemin, fetch(new URL(chemin, BASE), { cache: "no-cache" }).then((r) => {
       if (!r.ok) throw new Error(chemin + " : " + r.status);
       return texte ? r.text() : r.json();
     }));
