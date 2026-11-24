@@ -25,8 +25,7 @@
       ],
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
       "lieux": [],
-      "titre": "Comment habiter la Terre ?",
-      "sousTitre": "Fais tourner la Terre, puis zoome pour descendre jusqu'à ta maison."
+      "titre": "Comment habiter la Terre ?"
     },
     "monde": {
       "nom": "Les États", "echelle": "des États", "type": "pays", "donnees": "monde.json",

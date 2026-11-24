@@ -320,7 +320,7 @@ export class Globe {
           el("span", { class: "pt" }), el("span", { class: "lb", texte: o.nom || o.sujet }));
         C.append(b);
       }
-      C.append(el("div", { class: "titre-scene" }, el("h1", { texte: this.cfg.titre }), el("p", { texte: this.cfg.sousTitre })));
+      C.append(el("div", { class: "titre-scene" }, el("h1", { texte: this.cfg.titre }), this.cfg.sousTitre ? el("p", { texte: this.cfg.sousTitre }) : null));
     } else {
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
       this.boites();
