@@ -1,0 +1,17 @@
+# Le dépôt est public et servi tel quel par GitHub Pages : tout ce qui est suivi ici est en ligne.
+# Ce fichier lui-même est public : n'y écrire aucun nom ni rien de personnel.
+
+# Rangement commun : notes, méthode, scripts et archives restent sur l'ordinateur.
+docs/
+outils/
+archives/
+
+# Documents de travail
+CLAUDE.md
+en-cours.md
+.claude/
+
+# Fichiers du système
+Thumbs.db
+desktop.ini
+.DS_Store

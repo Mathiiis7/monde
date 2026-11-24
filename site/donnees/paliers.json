@@ -1,0 +1,127 @@
+{
+  "_lire": "Réglages des 6 paliers de l'accueil (8 dans la maquette : la région et le département sont devenus des contours de la France le 24/11/2026), repris de la maquette (toile « Monde, maquette », 19-23/11/2026). Les listes de sujets sont dans index.html ; ici, chaque nom de sujet doit y figurer (outils/site/verifier-sujets.py). Coordonnées en pixels de la scène de 1280 x 800 ; globe : centre (cx, cy), rayon r, point visé (lon, lat), pas des flèches [est-ouest, nord-sud] en degrés.",
+  "ordre": ["planete", "monde", "europe", "france", "ville", "maison"],
+  "territoires": [
+    ["Guadeloupe", -61.55, 16.2], ["Martinique", -61.02, 14.64], ["Guyane", -53.1, 3.95],
+    ["La Réunion", 55.53, -21.12], ["Mayotte", 45.15, -12.82], ["Saint-Pierre-et-Miquelon", -56.27, 46.95],
+    ["Saint-Barthélemy", -62.83, 17.9], ["Saint-Martin", -63.06, 18.07], ["Wallis-et-Futuna", -176.2, -13.3],
+    ["Polynésie française", -149.43, -17.65], ["Nouvelle-Calédonie", 165.6, -21.3], ["Terres australes", 69.35, -49.35]
+  ],
+  "paliers": {
+    "planete": {
+      "nom": "La planète", "echelle": "de la planète", "type": "terres", "donnees": "terres.json",
+      "globe": { "cx": 640, "cy": 400, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
+      "aria": "La Terre vue de l'espace, sans frontières. Glisse pour la faire tourner.",
+      "orbite": [
+        { "sujet": "Ce qui rend la Terre habitable", "droite": 440, "y": 170 },
+        { "sujet": "Les grands cycles", "droite": 392, "y": 290 },
+        { "sujet": "Les ressources", "droite": 392, "y": 410 },
+        { "sujet": "Les risques naturels", "droite": 412, "y": 530 },
+        { "sujet": "La biodiversité", "gauche": 868, "y": 230 },
+        { "sujet": "La population humaine", "gauche": 888, "y": 340 },
+        { "sujet": "L'empreinte des humains", "gauche": 888, "y": 450 },
+        { "sujet": "Le changement climatique", "gauche": 868, "y": 560 },
+        { "nom": "À qui est la Lune", "sujet": "Mers, pôles et espace", "gauche": 1040, "y": 120 }
+      ],
+      "lieux": [
+        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -32, "lat": 24 },
+        { "nom": "Jusqu'où va un pays en mer", "sujet": "Mers, pôles et espace", "lon": -145, "lat": 6 },
+        { "nom": "À qui est l'Antarctique", "sujet": "Mers, pôles et espace", "lon": 25, "lat": -72 }
+      ],
+      "titre": "Comment habiter la Terre ?",
+      "sousTitre": "Fais tourner la Terre, puis zoome pour descendre jusqu'à ta maison."
+    },
+    "monde": {
+      "nom": "Le monde", "echelle": "du monde", "type": "pays", "donnees": "monde.json",
+      "globe": { "cx": 700, "cy": 425, "r": 320, "lon": 12, "lat": 32, "pas": [30, 20] },
+      "aria": "La Terre et ses États. Glisse pour la faire tourner, clique sur un pays pour l'ouvrir.",
+      "lieux": [
+        { "nom": "L'ONU et ses agences", "sujet": "L'ONU et ses agences", "lon": -73.968, "lat": 40.749 },
+        { "nom": "La justice internationale", "sujet": "La justice internationale", "lon": 4.3, "lat": 52.08 }
+      ],
+      "coteAuto": 0.2,
+      "calques": [{ "repere": "o", "nom": "Montrer l'OTAN · 32 pays" }],
+      "ensuite": "ensuite : l'ONU, le G20, l'Union africaine…",
+      "cadre": "bas",
+      "zone": "un pays ou un territoire",
+      "vue": "le globe garde les vraies surfaces et les vraies formes. Au bord, les pays sont vus de biais : tourne-le pour les voir de face. Frontières de fait, d'après Natural Earth.",
+      "carte": {}
+    },
+    "europe": {
+      "nom": "L'Europe", "echelle": "de l'Europe", "type": "pays", "donnees": "europe.json",
+      "globe": { "cx": 740, "cy": 430, "r": 1100, "lon": 11, "lat": 50, "pas": [8, 5] },
+      "aria": "L'Europe sur le globe. Glisse pour la déplacer, clique sur un pays pour l'ouvrir.",
+      "lieux": [
+        { "nom": "L'Union européenne", "sujet": "L'Union européenne : qui décide, ce qu'elle décide, l'euro, Schengen", "lon": 4.38, "lat": 50.84, "gauche": true },
+        { "nom": "Le Conseil de l'Europe et la CEDH", "sujet": "Le Conseil de l'Europe et la Cour européenne des droits de l'homme", "lon": 7.77, "lat": 48.59, "gauche": true },
+        { "nom": "La BCE", "sujet": "La BCE (et la Banque de France)", "lon": 8.70, "lat": 50.11 }
+      ],
+      "calques": [{ "repere": "u", "nom": "L'Union européenne · 27 pays" }, { "repere": "e", "nom": "La zone euro · 21 pays" }],
+      "ensuite": "ensuite : l'espace Schengen, le Conseil de l'Europe…",
+      "cadre": "haut",
+      "zone": "un pays ou un territoire",
+      "vue": "c'est le même globe, vu de plus près : les surfaces et les formes restent vraies. Frontières de fait, d'après Natural Earth.",
+      "carte": { "ue": true, "euro": true, "france": { "texte": "Voir la France de plus près", "aller": "france" } }
+    },
+    "france": {
+      "nom": "La France", "echelle": "de la France", "type": "pays", "donnees": "france.json",
+      "globe": { "cx": 640, "cy": 420, "r": 3440, "lon": 2.5, "lat": 46.6, "pas": [3, 2] },
+      "aria": "La France sur le globe, avec l'outre-mer. Glisse pour la déplacer, clique sur un pays pour l'ouvrir.",
+      "paris": {
+        "lon": 2.35, "lat": 48.86, "decalage": [75, -200], "etiquette": "Capitale", "gauche": true,
+        "titre": "Ceux qui décident, à Paris",
+        "liens": [
+          { "texte": "Le président de la République", "sujet": "Le président, le gouvernement, la cohabitation" },
+          { "texte": "Le Premier ministre et le gouvernement", "sujet": "Le président, le gouvernement, la cohabitation" },
+          { "texte": "Le Parlement : Assemblée nationale et Sénat", "sujet": "Le Parlement et les lois" },
+          { "texte": "Le Conseil constitutionnel", "sujet": "Le Conseil constitutionnel, le Conseil d'État, la justice" },
+          { "texte": "Le Conseil d'État", "sujet": "Le Conseil constitutionnel, le Conseil d'État, la justice" }
+        ]
+      },
+      "outremer": true,
+      "_decoupage": "Choix du 24/11/2026 : la région et le département ne sont plus des paliers. Toutes les frontières sont sur la France (régions en trait épais, départements en trait fin, noms des départements au survol) ; une région et un département pris en exemple, comme la ville type, portent les fiches de leur échelle : Centre-Val de Loire et le Loiret (choisis le 24/11/2026).",
+      "decoupage": {
+        "_etiquettes": "Demande du 24/11/2026 : pas de noms de régions sur la carte ; sur les exemples, les mots « Région » et « Département », sans point, chacun de sa couleur (la région en gris-bleu clair, le département en sable).",
+        "regions": "regions.json", "departements": "departements.json",
+        "region": { "nom": "Centre-Val de Loire", "etiquette": "Région", "petit": "Exemple pris : Centre-Val de Loire", "position": [1.75, 46.95],
+          "liens": [ { "sujet": "Communes, départements, régions : qui fait quoi" } ] },
+        "departement": { "nom": "Loiret (45)", "etiquette": "Département", "petit": "Exemple pris : le Loiret",
+          "liens": [
+            { "sujet": "Le préfet : l'État dans les territoires" },
+            { "sujet": "Communes, départements, régions : qui fait quoi" },
+            { "texte": "Voir une ville type", "aller": "ville" }
+          ] }
+      },
+      "ensuite": "ensuite : le territoire, l'argent de l'État, la vie collective…",
+      "cadre": "haut",
+      "legendeEnBas": true,
+      "zone": "un pays ou un territoire",
+      "vue": "c'est le même globe, vu de très près : les surfaces et les formes restent vraies, outre-mer compris. Frontières de fait, d'après Natural Earth ; régions et départements : data.gouv.fr, d'après l'IGN (licence ODbL).",
+      "carte": { "ue": true, "euro": true, "france": { "texte": "Les sujets de cette échelle", "liste": true } }
+    },
+    "ville": {
+      "nom": "Une ville", "echelle": "d'une ville", "type": "plan", "dessin": "ville.svg", "lieux": "lieux-ville.json",
+      "zonesVisibles": true,
+      "aria": "Le plan d'une ville type, inventée. Clique sur un lieu pour son sujet.",
+      "descendre": { "texte": "Entrer dans une maison", "aller": "maison" },
+      "boite": { "x": 214, "y": 84, "l": 400 },
+      "textes": [
+        "<b class=\"t\">Une ville type</b>",
+        "<b>Ce que cette vue montre :</b> une ville inventée, pas un plan réel, avec les services qu'on trouve dans beaucoup de villes moyennes. Les distances ne sont pas à l'échelle.",
+        "Clique sur un lieu pour son sujet. Ensuite : qui s'en occupe (la commune, l'intercommunalité, le département, la région, l'État)…"
+      ]
+    },
+    "maison": {
+      "nom": "Une maison", "echelle": "d'une maison", "type": "plan", "dessin": "maison.svg", "lieux": "lieux-maison.json",
+      "zonesVisibles": false,
+      "aria": "Une maison type, inventée, vue en coupe. Clique sur un objet pour son sujet.",
+      "boite": { "x": 1036, "y": 96, "l": 220 },
+      "textes": [
+        "<b class=\"t\">Une maison type</b>",
+        "<b>Ce que cette vue montre :</b> une maison inventée, vue en coupe, avec des objets de tous les jours. Ni les pièces ni les objets ne sont à l'échelle.",
+        "Un foyer parmi d'autres : seul, en couple, en famille, en appartement… les sujets valent pour tous.",
+        "Clique sur un objet pour son sujet."
+      ]
+    }
+  }
+}

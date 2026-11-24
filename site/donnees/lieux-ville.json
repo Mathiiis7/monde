@@ -1,0 +1,22 @@
+{
+  "sujets": [
+    "La mairie et les services publics près de chez soi",
+    "Les déchets et l'eau du robinet",
+    "Se déplacer",
+    "Se loger (prix, logement social)",
+    "L'école, l'hôpital, le tribunal, le commissariat",
+    "Les entreprises et le travail"
+  ],
+  "lieux": [
+    {"nom": "La mairie", "sujet": 0, "r": [618, 386, 48, 32], "cote": 1},
+    {"nom": "L'école", "sujet": 4, "r": [500, 318, 46, 28], "cote": 0},
+    {"nom": "L'hôpital", "sujet": 4, "r": [990, 248, 58, 42], "cote": 0},
+    {"nom": "Le tribunal", "sujet": 4, "r": [700, 486, 42, 28], "cote": 0},
+    {"nom": "Le commissariat", "sujet": 4, "r": [520, 486, 40, 26], "cote": 1},
+    {"nom": "La gare et les bus", "sujet": 2, "r": [404, 300, 62, 18], "cote": 0},
+    {"nom": "L'eau potable", "sujet": 1, "r": [878, 128, 26, 26], "cote": 1},
+    {"nom": "La déchetterie", "sujet": 1, "r": [1112, 590, 50, 32], "cote": 0},
+    {"nom": "Les logements", "sujet": 3, "r": [296, 540, 84, 54], "cote": 0, "descendre": true},
+    {"nom": "Les entreprises", "sujet": 5, "r": [1040, 446, 74, 42], "cote": 0}
+  ]
+}

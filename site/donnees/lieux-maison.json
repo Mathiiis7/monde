@@ -1,0 +1,49 @@
+{
+  "sujets": [
+    {"nom": "Se nourrir", "desc": "d'où vient ce qu'on mange, qui fixe les prix, qui contrôle la qualité, les labels"},
+    {"nom": "Se soigner", "desc": "Assurance maladie, mutuelle, médecin traitant, hôpital, remboursements"},
+    {"nom": "Travailler", "desc": "contrats, salaire brut et net, fiche de paie, droit du travail"},
+    {"nom": "Perdre son emploi", "desc": "l'assurance chômage et l'accompagnement"},
+    {"nom": "Gérer son argent", "desc": "compte en banque, crédit, épargne, impôt sur le revenu"},
+    {"nom": "Payer ses factures", "desc": "électricité, gaz, eau, téléphone, qui fixe les prix"},
+    {"nom": "Élever des enfants", "desc": "crèche, école, allocations familiales"},
+    {"nom": "Étudier", "desc": "de l'école à l'université, l'orientation, les bourses"},
+    {"nom": "Consommer", "desc": "droits du consommateur, garanties, arnaques"},
+    {"nom": "Vivre en ligne", "desc": "internet, données personnelles, réseaux sociaux"},
+    {"nom": "Ses papiers", "desc": "identité, état civil, mariage, PACS, divorce, héritage"},
+    {"nom": "S'informer", "desc": "médias, audiovisuel public, à qui appartiennent les journaux"},
+    {"nom": "Préparer sa retraite", "desc": "comment on acquiert des droits, comment les retraites sont financées"},
+    {"nom": "Les aides sociales", "desc": "RSA, prime d'activité, minimum vieillesse..."},
+    {"nom": "Vieillir", "desc": "perte d'autonomie, maisons de retraite, aides"},
+    {"nom": "Le handicap", "desc": "droits et aides"},
+    {"nom": "Le pouvoir d'achat", "desc": "ce que mesure ce mot"}
+  ],
+  "pieces": [
+    {"nom": "Chambre d'enfant", "x0": 262, "x1": 452, "etage": 1},
+    {"nom": "Salle de bain", "x0": 458, "x1": 588, "etage": 1},
+    {"nom": "Bureau", "x0": 594, "x1": 800, "etage": 1},
+    {"nom": "Chambre", "x0": 806, "x1": 988, "etage": 1},
+    {"nom": "Entrée", "x0": 262, "x1": 440, "etage": 0},
+    {"nom": "Cuisine", "x0": 446, "x1": 690, "etage": 0},
+    {"nom": "Salon", "x0": 696, "x1": 988, "etage": 0}
+  ],
+  "lieux": [
+    {"nom": "Le lit d'enfant", "objet": "lit-enfant", "sujet": 6, "r": [272, 416, 96, 62], "p": [286, 400], "cote": 0},
+    {"nom": "Le cartable", "objet": "cartable", "sujet": 7, "r": [386, 444, 36, 34], "p": [404, 430], "cote": 0},
+    {"nom": "L'armoire à pharmacie", "objet": "pharmacie", "sujet": 1, "r": [504, 300, 52, 58], "p": [530, 290], "cote": 1},
+    {"nom": "Le relevé de carrière", "objet": "classeurs", "sujet": 12, "r": [602, 282, 90, 46], "p": [646, 274], "cote": 0},
+    {"nom": "La fiche de paie", "objet": "fiche-paie", "sujet": 2, "r": [606, 360, 34, 48], "p": [606, 384], "cote": 1},
+    {"nom": "Le relevé de banque", "objet": "releve-banque", "sujet": 4, "r": [648, 360, 34, 48], "p": [665, 348], "cote": 0},
+    {"nom": "Le téléphone", "objet": "telephone", "sujet": 9, "r": [818, 422, 30, 56], "p": [833, 408], "cote": 0},
+    {"nom": "Le compteur électrique", "objet": "compteur", "sujet": 5, "r": [280, 512, 30, 48], "p": [295, 502], "cote": 0},
+    {"nom": "Le tiroir des papiers", "objet": "console", "sujet": 10, "r": [300, 640, 84, 60], "p": [342, 628], "cote": 0},
+    {"nom": "Le colis livré", "objet": "colis", "sujet": 8, "r": [212, 670, 34, 30], "p": [229, 658], "cote": 1},
+    {"nom": "La rampe d'accès", "objet": "rampe", "sujet": 15, "r": [118, 676, 130, 48], "p": [178, 742], "cote": 0},
+    {"nom": "Le réfrigérateur", "objet": "frigo", "sujet": 0, "r": [610, 546, 70, 154], "p": [645, 538], "cote": 1},
+    {"nom": "Le courrier de la CAF", "objet": "courrier", "sujet": 13, "r": [622, 556, 30, 36], "p": [652, 574], "cote": 0},
+    {"nom": "Le ticket de caisse", "objet": "sac", "sujet": 16, "r": [556, 598, 36, 42], "p": [574, 590], "cote": 1},
+    {"nom": "La photo des grands-parents", "objet": "photo", "sujet": 14, "r": [736, 506, 44, 44], "p": [780, 528], "cote": 0},
+    {"nom": "Le CV", "objet": "cv", "sujet": 3, "r": [826, 626, 30, 42], "p": [841, 614], "cote": 1},
+    {"nom": "La télévision", "objet": "tele", "sujet": 11, "r": [892, 596, 80, 56], "p": [932, 584], "cote": 1}
+  ]
+}
