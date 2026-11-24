@@ -387,7 +387,7 @@ export class Globe {
   }
 
   // Plus de boutons fléchés à l'écran (demande du 24/11/2026) : on fait tourner le globe en le glissant, ou avec les
-  // flèches du clavier ; la planète se remet à tourner seule 5 secondes après le dernier geste (voir reprendre()).
+  // flèches du clavier ; la planète se remet à tourner seule 3 secondes après le dernier geste (voir reprendre()).
   commandes() {
     const [pl, pn] = this.g.pas;
     const sens = { ArrowLeft: [-pl, 0], ArrowRight: [pl, 0], ArrowUp: [0, pn], ArrowDown: [0, -pn] };
@@ -524,7 +524,7 @@ export class Globe {
     this.reprendre();
   }
 
-  // La planète se remet à tourner seule 5 secondes après le dernier geste (demande du 24/11/2026), sauf si l'ordinateur
+  // La planète se remet à tourner seule 3 secondes après le dernier geste (demande du 24/11/2026), sauf si l'ordinateur
   // demande moins d'animations ; tant qu'on la tient (glisser), on attend encore.
   reprendre() {
     clearTimeout(this.reprise);
@@ -533,7 +533,7 @@ export class Globe {
       if (this.detruit || this.etat.auto) return;
       if (this.glisse || this.enVol) { this.reprendre(); return; }
       this.lancer();
-    }, 5000);
+    }, 3000);
   }
 
   // ---- Glisser, survoler, cliquer ----
