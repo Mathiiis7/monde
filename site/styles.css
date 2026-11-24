@@ -55,9 +55,10 @@ html.carte .sommaire { display: none; }
 .page a { text-underline-offset: 3px; }
 .page footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--filet); display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }
 
-/* le lien vers les mentions légales, en bas à gauche de la carte */
-.pied { position: absolute; left: 24px; bottom: 10px; z-index: 2; padding: 3px 8px; border-radius: 6px; background: rgb(11 13 16 / .82); font-size: 12.5px; color: var(--encre-2); text-decoration: underline; text-underline-offset: 3px; }
-.pied:hover { color: var(--encre); }
+/* « ? » au bout de la barre du haut, et son petit menu : « Comment Monde est fait », mentions légales */
+.aide-boite { position: relative; display: flex; }
+.cap .aide { width: 38px; padding: 0; justify-content: center; font-size: 16px; font-weight: 700; }
+.menu-aide { position: absolute; top: calc(100% + 12px); right: -5px; width: max-content; display: flex; flex-direction: column; gap: 2px; padding: 6px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); }
 html.carte, html.carte body { height: 100%; overflow: hidden; }
 
 /* ---- La scène ---- */
@@ -134,14 +135,17 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .calques .ensuite { color: var(--encre-2); }
 .legende { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--encre-2); }
 .legende span { display: inline-flex; align-items: center; gap: 8px; }
-.vue { position: absolute; right: calc(24px - var(--dx, 0px)); bottom: calc(96px - var(--dy, 0px)); width: 250px; margin: 0; font-size: 13px; line-height: 1.5; color: var(--encre-2); z-index: 2; }
+.vue { position: absolute; right: calc(24px - var(--dx, 0px)); bottom: calc(24px - var(--dy, 0px)); width: 250px; margin: 0; font-size: 13px; line-height: 1.5; color: var(--encre-2); z-index: 2; }
 .vue.boite { background: rgb(22 25 29 / .92); padding: 12px 14px; border-radius: 12px; box-shadow: var(--ombre); }
 .vue p { margin: 0; }
+.vue .source { font-size: 12px; }
 .vue .legende { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--filet); }
 .vue b, .boite-plan b { color: var(--encre); }
-.tour { position: absolute; right: calc(24px - var(--dx, 0px)); bottom: calc(24px - var(--dy, 0px)); display: flex; gap: 6px; align-items: center; padding: 6px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 2; }
-.tour span { font-size: 13.5px; color: var(--encre-2); padding: 0 6px 0 8px; }
-.tour button { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--filet); background: var(--releve); color: var(--encre); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
+/* « Tourner » : centré sous le globe (left et top posés par globe.js) */
+.tour { position: absolute; transform: translateX(-50%); display: flex; gap: 4px; align-items: center; padding: 4px; background: var(--surface); border-radius: 10px; box-shadow: var(--ombre); z-index: 2; }
+.tour span { font-size: 12.5px; color: var(--encre-2); padding: 0 4px 0 6px; }
+.tour svg { width: 16px; height: 16px; }
+.tour button { width: 32px; height: 32px; border-radius: 7px; border: 1px solid var(--filet); background: var(--releve); color: var(--encre); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
 .om { position: absolute; left: calc(196px - var(--dx, 0px)); bottom: calc(22px - var(--dy, 0px)); width: 470px; box-sizing: border-box; background: rgb(22 25 29 / .94); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); display: flex; flex-direction: column; gap: 10px; z-index: 3; }
 .om .t { font-family: var(--titre); font-size: 19px; font-weight: 600; }
 .om-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }

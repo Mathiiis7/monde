@@ -67,14 +67,32 @@ class Accueil {
     const pages = ["Les grandes questions", "Les modèles et leurs noms", "Lexique"];
     S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "left:50%;transform:translateX(-50%)" },
       pages.map((p) => el("button", { texte: p, onclick: (ev) => this.ouvrirPage(p, ev.currentTarget) })),
-      el("a", { href: "comment-monde-est-fait.html", texte: "Comment Monde est fait" })));
-    S.append(el("a", { class: "pied", href: "mentions-legales.html", texte: "Mentions légales" }));
+      this.construireAide()));
     this.bListe = el("button", { class: "capbtn", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
     S.append(this.bListe);
     this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id }, el("span", { class: "o" }), this.reglages.paliers[id].nom));
     this.bPlus = el("button", { class: "zb", "aria-label": "Zoomer", texte: "+", onclick: () => this.pas(1) });
     this.bMoins = el("button", { class: "zb", "aria-label": "Dézoomer", texte: "−", onclick: () => this.pas(-1) });
     S.append(el("nav", { class: "ech", "aria-label": "Échelle de la carte" }, this.bPlus, el("div", { class: "rail" }, this.rail), this.bMoins));
+  }
+
+  // « ? » au bout de la barre du haut : un petit menu vers les deux pages sur le site lui-même, « Comment Monde est
+  // fait » et les mentions légales (demande du 24/11/2026). Il se ferme par Échap ou par un clic ailleurs.
+  construireAide() {
+    this.bAide = el("button", { class: "aide", texte: "?", "aria-label": "À propos de Monde", "aria-expanded": "false",
+      "aria-controls": "menu-aide", onclick: () => this.basculerAide() });
+    this.menuAide = el("div", { class: "menu-aide", id: "menu-aide", hidden: true },
+      el("a", { href: "comment-monde-est-fait.html", texte: "Comment Monde est fait" }),
+      el("a", { href: "mentions-legales.html", texte: "Mentions légales" }));
+    addEventListener("pointerdown", (ev) => { if (!this.menuAide.hidden && !ev.target.closest(".aide-boite")) this.basculerAide(false); });
+    return el("div", { class: "aide-boite" }, this.bAide, this.menuAide);
+  }
+
+  basculerAide(ouvrir = this.menuAide.hidden) {
+    this.menuAide.hidden = !ouvrir;
+    this.bAide.setAttribute("aria-expanded", String(ouvrir));
+    if (ouvrir) this.menuAide.querySelector("a").focus();
+    return true;
   }
 
   pas(sens) {
@@ -224,6 +242,7 @@ class Accueil {
   }
 
   echap() {
+    if (!this.menuAide.hidden) { this.basculerAide(false); this.bAide.focus(); return; }
     if (this.fermerPanneaux()) return;
     if (this.objet && this.objet.echap) this.objet.echap();
   }

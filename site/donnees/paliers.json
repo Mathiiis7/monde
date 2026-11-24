@@ -43,7 +43,6 @@
       "ensuite": "ensuite : l'ONU, le G20, l'Union africaine…",
       "cadre": "bas",
       "zone": "un pays ou un territoire",
-      "vue": "le globe garde les vraies surfaces et les vraies formes. Au bord, les pays sont vus de biais : tourne-le pour les voir de face. Frontières de fait, d'après Natural Earth.",
       "carte": {}
     },
     "europe": {
@@ -59,7 +58,6 @@
       "ensuite": "ensuite : l'espace Schengen, le Conseil de l'Europe…",
       "cadre": "haut",
       "zone": "un pays ou un territoire",
-      "vue": "c'est le même globe, vu de plus près : les surfaces et les formes restent vraies. Frontières de fait, d'après Natural Earth.",
       "carte": { "ue": true, "euro": true, "france": { "texte": "Voir la France de plus près", "aller": "france" } }
     },
     "france": {
@@ -95,7 +93,7 @@
       "cadre": "haut",
       "legendeEnBas": true,
       "zone": "un pays ou un territoire",
-      "vue": "c'est le même globe, vu de très près : les surfaces et les formes restent vraies, outre-mer compris. Frontières de fait, d'après Natural Earth ; régions et départements : data.gouv.fr, d'après l'IGN (licence ODbL).",
+      "source": "Régions et départements : data.gouv.fr, d'après l'IGN (licence ODbL)",
       "carte": { "ue": true, "euro": true, "france": { "texte": "Les sujets de cette échelle", "liste": true } }
     },
     "ville": {

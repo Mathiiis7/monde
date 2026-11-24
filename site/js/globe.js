@@ -327,8 +327,12 @@ export class Globe {
     // la légende va avec les boutons en haut, ou (France) dans la boîte du bas à droite, pour laisser la carte visible
     const legende = el("div", { class: "legende" }, lignes);
     C.append(el("div", { class: "bas" + (cfg.cadre === "haut" ? " haut" : "") }, calques, cfg.legendeEnBas ? null : legende));
-    C.append(el("div", { class: "vue" + (cfg.cadre === "haut" ? " boite" : "") }, cfg.legendeEnBas ? legende : null,
-      el("p", {}, el("b", { texte: "Ce que cette vue respecte :" }), " " + cfg.vue)));
+    // L'encadré « Ce que cette vue respecte » est retiré (choix du 24/11/2026) : l'explication est sur « Comment Monde
+    // est fait ». Reste, sur la France, la source des contours, que leur licence (ODbL) demande près de la carte.
+    if (cfg.legendeEnBas || cfg.source) {
+      C.append(el("div", { class: "vue" + (cfg.cadre === "haut" ? " boite" : "") }, cfg.legendeEnBas ? legende : null,
+        cfg.source ? el("p", { class: "source", texte: cfg.source }) : null));
+    }
     if (cfg.paris) {
       this.inst = el("div", { class: "fiche", hidden: true }, el("b", { class: "t", texte: cfg.paris.titre, style: "font-size:19px;padding-right:0;margin-bottom:4px" }),
         cfg.paris.liens.map((l) => el("button", { class: "lien", texte: l.texte, onclick: () => this.appli.ouvrirSujet(l.sujet) })));
@@ -354,6 +358,11 @@ export class Globe {
       this.bPause = el("button", { onclick: () => (this.etat.auto ? this.arreter() : this.lancer()) });
       tour.append(this.bPause);
     }
+    // centré sous le globe, pour qu'on voie qu'il le fait tourner (demande du 24/11/2026) ; quand le globe est plus grand
+    // que l'écran (Europe, France), en bas de la fenêtre, au milieu
+    const { cx, cy, r } = this.g;
+    tour.style.left = (r > 600 ? 640 : cx) + "px";
+    tour.style.top = `min(${cy + r + 14}px, calc(100% + var(--dy, 0px) - 52px))`;
     this.couche.append(tour);
     this.majCommandes();
   }
