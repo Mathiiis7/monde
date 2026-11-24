@@ -1,7 +1,7 @@
 // Le globe des paliers « La planète » à « Le département » : la Terre vue de loin (projection orthographique),
 // dessinée en SVG et recalculée à chaque mouvement. Seul le globe garde à la fois les vraies surfaces et les vraies formes.
 // Repris des planches de la maquette (L-globe, M-globe et leurs dérivées Europe, France, région, département).
-import { el, svg, icone, boutonFermer, borne, calme } from "./outils.js";
+import { el, svg, boutonFermer, borne, calme } from "./outils.js";
 
 const D = Math.PI / 180;
 
@@ -386,32 +386,24 @@ export class Globe {
     }
   }
 
+  // Plus de boutons fléchés à l'écran (demande du 24/11/2026) : on fait tourner le globe en le glissant, ou avec les
+  // flèches du clavier ; la planète se remet à tourner seule 5 secondes après le dernier geste (voir reprendre()).
   commandes() {
     const [pl, pn] = this.g.pas;
-    const bouton = (nom, ic, f) => el("button", { "aria-label": nom, onclick: f }, icone(ic));
-    // les flèches seules, sans le mot « Tourner » (demande du 24/11/2026) ; le groupe garde son nom pour les lecteurs d'écran
-    const tour = el("div", { class: "tour", role: "group", "aria-label": "Faire tourner la Terre" },
-      bouton("Voir plus à l'ouest", "ouest", () => this.aller(-pl, 0)), bouton("Voir plus au nord", "nord", () => this.aller(0, pn)),
-      bouton("Voir plus au sud", "sud", () => this.aller(0, -pn)), bouton("Voir plus à l'est", "est", () => this.aller(pl, 0)));
-    if (this.planete) {
-      this.bPause = el("button", { onclick: () => (this.etat.auto ? this.arreter() : this.lancer()) });
-      tour.append(this.bPause);
-    }
-    // centré sous le globe, pour qu'on voie qu'il le fait tourner (demande du 24/11/2026) ; quand le globe est plus grand
-    // que l'écran (Europe, France), en bas de la fenêtre, au milieu
-    const { cx, cy, r } = this.g;
-    tour.style.left = (r > 600 ? 640 : cx) + "px";
-    tour.style.top = `min(${cy + r + 32}px, calc(100% + var(--dy, 0px) - 52px))`;
-    this.couche.append(tour);
+    const sens = { ArrowLeft: [-pl, 0], ArrowRight: [pl, 0], ArrowUp: [0, pn], ArrowDown: [0, -pn] };
+    this.touches = (ev) => {
+      const d = sens[ev.key];
+      if (!d || this.detruit || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      if (ev.target && ev.target.closest && ev.target.closest(".pan, .panneau, .menu-aide, input, textarea")) return;
+      ev.preventDefault();
+      this.aller(d[0], d[1]);
+    };
+    addEventListener("keydown", this.touches);
     this.majCommandes();
   }
 
   majCommandes() {
     const e = this.etat;
-    if (this.bPause) {
-      this.bPause.replaceChildren(icone(e.auto ? "pause" : "lecture"));
-      this.bPause.setAttribute("aria-label", e.auto ? "Arrêter la rotation" : "Faire tourner la Terre");
-    }
     for (const b of this.boutonsCalques || []) { const on = e.calque === b.repere; b.className = on ? "on" : ""; b.setAttribute("aria-pressed", on); }
     if (this.bInst) { this.bInst.className = e.institutions ? "on" : ""; this.bInst.setAttribute("aria-pressed", e.institutions); }
     if (this.bOm) { this.bOm.className = e.outremer ? "on" : ""; this.bOm.setAttribute("aria-expanded", e.outremer); this.om.hidden = !e.outremer; }
@@ -529,6 +521,19 @@ export class Globe {
   arreter() {
     cancelAnimationFrame(this.tourne);
     if (this.etat.auto) { this.etat.auto = false; this.majCommandes(); }
+    this.reprendre();
+  }
+
+  // La planète se remet à tourner seule 5 secondes après le dernier geste (demande du 24/11/2026), sauf si l'ordinateur
+  // demande moins d'animations ; tant qu'on la tient (glisser), on attend encore.
+  reprendre() {
+    clearTimeout(this.reprise);
+    if (!this.planete || !this.g.tourne || calme() || this.detruit) return;
+    this.reprise = setTimeout(() => {
+      if (this.detruit || this.etat.auto) return;
+      if (this.glisse || this.enVol) { this.reprendre(); return; }
+      this.lancer();
+    }, 5000);
   }
 
   // ---- Glisser, survoler, cliquer ----
@@ -633,6 +638,8 @@ export class Globe {
   detruire() {
     this.detruit = true;
     this.etat.auto = false;
+    clearTimeout(this.reprise);
+    if (this.touches) removeEventListener("keydown", this.touches);
     this.enVol = false;
     cancelAnimationFrame(this.vol);
     clearTimeout(this.secours);

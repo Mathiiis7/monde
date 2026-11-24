@@ -73,7 +73,7 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .scene svg.carte.glisse { cursor: grab; touch-action: none; user-select: none; }
 .scene svg.carte.glisse:active { cursor: grabbing; }
 .chargement { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--encre-2); font-size: 14px; }
-.titre-scene { position: absolute; left: 0; right: 0; bottom: 24px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.titre-scene { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .titre-scene h1 { margin: 0; font-family: var(--titre); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -0.01em; }
 .titre-scene p { margin: 0; font-size: 14px; color: var(--encre-2); }
 
@@ -143,11 +143,6 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .vue .source { font-size: 12px; }
 .vue .legende { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--filet); }
 .vue b, .boite-plan b { color: var(--encre); }
-/* les flèches qui font tourner le globe : centrées sous lui (left et top posés par globe.js) */
-.tour { position: absolute; transform: translateX(-50%); display: flex; gap: 4px; align-items: center; padding: 4px; background: var(--surface); border-radius: 10px; box-shadow: var(--ombre); z-index: 2; }
-
-.tour svg { width: 16px; height: 16px; }
-.tour button { width: 32px; height: 32px; border-radius: 7px; border: 1px solid var(--filet); background: var(--releve); color: var(--encre); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
 .om { position: absolute; left: calc(196px - var(--dx, 0px)); bottom: calc(22px - var(--dy, 0px)); width: 470px; box-sizing: border-box; background: rgb(22 25 29 / .94); padding: 14px 16px; border-radius: 12px; box-shadow: var(--ombre); display: flex; flex-direction: column; gap: 10px; z-index: 3; }
 .om .t { font-family: var(--titre); font-size: 19px; font-weight: 600; }
 .om-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
