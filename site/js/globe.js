@@ -401,7 +401,7 @@ export class Globe {
     // que l'écran (Europe, France), en bas de la fenêtre, au milieu
     const { cx, cy, r } = this.g;
     tour.style.left = (r > 600 ? 640 : cx) + "px";
-    tour.style.top = `min(${cy + r + 14}px, calc(100% + var(--dy, 0px) - 52px))`;
+    tour.style.top = `min(${cy + r + 32}px, calc(100% + var(--dy, 0px) - 52px))`;
     this.couche.append(tour);
     this.majCommandes();
   }
