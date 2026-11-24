@@ -13,6 +13,7 @@
       "globe": { "cx": 640, "cy": 400, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
       "aria": "La Terre vue de l'espace, sans frontières. Glisse pour la faire tourner.",
       "orbite": [
+        { "sujet": "L'histoire de la Terre et du vivant", "droite": 520, "y": 105 },
         { "sujet": "Ce qui rend la Terre habitable", "droite": 440, "y": 170 },
         { "sujet": "Les grands cycles", "droite": 392, "y": 290 },
         { "sujet": "Les ressources", "droite": 392, "y": 410 },
@@ -104,9 +105,9 @@
       "boite": { "x": 214, "y": 84, "l": 400 },
       "textes": [
         "<b class=\"t\">Une ville type</b>",
-        "<b>Ce que cette vue montre :</b> une ville inventée, pas un plan réel, avec les services qu'on trouve dans beaucoup de villes moyennes. Les distances ne sont pas à l'échelle.",
-        "Clique sur un lieu pour son sujet. Ensuite : qui s'en occupe (la commune, l'intercommunalité, le département, la région, l'État)…"
-      ]
+        "<b>Ce que cette vue montre :</b> une ville inventée, pas un plan réel, avec les services qu'on trouve dans beaucoup de villes moyennes. Les distances ne sont pas à l'échelle."
+      ],
+      "consigne": "Clique sur un lieu pour son sujet. Ensuite : qui s'en occupe (la commune, l'intercommunalité, le département, la région, l'État)…"
     },
     "maison": {
       "nom": "Une maison", "echelle": "d'une maison", "type": "plan", "dessin": "maison.svg", "lieux": "lieux-maison.json",
@@ -116,9 +117,9 @@
       "textes": [
         "<b class=\"t\">Une maison type</b>",
         "<b>Ce que cette vue montre :</b> une maison inventée, vue en coupe, avec des objets de tous les jours. Ni les pièces ni les objets ne sont à l'échelle.",
-        "Un foyer parmi d'autres : seul, en couple, en famille, en appartement… les sujets valent pour tous.",
-        "Clique sur un objet pour son sujet."
-      ]
+        "Un foyer parmi d'autres : seul, en couple, en famille, en appartement… les sujets valent pour tous."
+      ],
+      "consigne": "Clique sur un objet pour son sujet."
     }
   }
 }

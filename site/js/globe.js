@@ -219,6 +219,8 @@ export class Globe {
   // Une région et un département pris en exemple, comme la ville type, portent les fiches de leur échelle.
   preparerDecoupage(d, lieux) {
     const cfg = this.cfg.decoupage;
+    // un exemple sans fiche montrée (cfg.*.masque, voir filtrer() dans accueil.js) n'est ni coloré ni étiqueté
+    const avecRegion = !cfg.region.masque, avecDep = !cfg.departement.masque;
     const nouveau = (z, u, groupe) => {
       const it = { i: this.items.length, code: z[0], nom: z[1], f: z[2], groupe, anneaux: z[4].map((r) => contour(r, 0, u, 1)) };
       this.items.push(it);
@@ -227,7 +229,7 @@ export class Globe {
     // les régions : leurs limites en trait épais, et leurs contours en degrés pour savoir où tombe chaque département
     const regions = d.regions.zones.map((z) => {
       const it = nouveau(z, d.regions.u || 20, "region");
-      it.exemple = it.nom === cfg.region.nom;
+      it.exemple = avecRegion && it.nom === cfg.region.nom;
       return { it, ll: z[4].map((r) => enDegres(r, d.regions.u || 20)) };
     });
     const etiq = new Map(d.departements.etiq.map((e) => [e[0], e]));
@@ -236,14 +238,14 @@ export class Globe {
       const e = etiq.get(it.nom.replace(/ \(.*\)$/, ""));         // « Loiret (45) » a pour étiquette « Loiret »
       const reg = e && regions.find((rg) => rg.ll.some((an) => dedans(e[1], e[2], an)));
       it.region = reg ? reg.it.nom : null;
-      it.exemple = it.nom === cfg.departement.nom;
-      it.dansExemple = it.region === cfg.region.nom;
+      it.exemple = avecDep && it.nom === cfg.departement.nom;
+      it.dansExemple = avecRegion && it.region === cfg.region.nom;
       if (it.exemple) lieux.push({ nom: cfg.departement.etiquette, lon: e[1], lat: e[2], sorte: "exemple", cle: "departement" });
     }
     // pas de noms de régions sur la carte : seulement le mot « Région » sur l'exemple, placé dans la région, hors du département
     const r = d.regions.etiq.find((e) => e[0] === cfg.region.nom);
     const [lon, lat] = cfg.region.position || [r[1], r[2]];
-    lieux.push({ nom: cfg.region.etiquette, lon, lat, sorte: "exemple", cle: "region" });
+    if (avecRegion) lieux.push({ nom: cfg.region.etiquette, lon, lat, sorte: "exemple", cle: "region" });
   }
 
   // ---- La scène : le dessin, les étiquettes, les commandes ----
@@ -357,8 +359,8 @@ export class Globe {
     const lignes = cfg.decoupage
       ? [el("span", {}, echantillon("#c9cdab", "#596046"), "un département : survole pour son nom"),
         el("span", {}, trait(), "la limite d'une région"),
-        el("span", {}, echantillon("#b9c8cf", "#3d4230"), "une région prise en exemple"),
-        el("span", {}, echantillon("#e2d39f", "#596046"), "un département pris en exemple")]
+        cfg.decoupage.region.masque ? null : el("span", {}, echantillon("#b9c8cf", "#3d4230"), "une région prise en exemple"),
+        cfg.decoupage.departement.masque ? null : el("span", {}, echantillon("#e2d39f", "#596046"), "un département pris en exemple")]
       : [el("span", {}, echantillon("#a9b08c", "#6c7355"), cfg.zone + " : survole pour son nom, clique pour l'ouvrir")];
     // la légende va avec les boutons en haut, ou (France) dans la boîte du bas à droite, pour laisser la carte visible
     const legende = el("div", { class: "legende" }, lignes);
@@ -587,7 +589,7 @@ export class Globe {
     const cfg = this.cfg, carte = cfg.carte || {};
     const lignes = [];
     const lien = (texte, f) => el("button", { class: "lien", texte, onclick: f });
-    const puissance = a(it, "g"), france = it.code === "FRA" && carte.france;
+    const puissance = a(it, "g") && this.appli.visible("Les grandes puissances"), france = it.code === "FRA" && carte.france;
     if (carte.ue && a(it, "u")) lignes.push(el("span", { texte: "Membre de l'Union européenne." }));
     if (carte.euro && a(it, "e")) lignes.push(el("span", { texte: "Dans la zone euro." }));
     if (a(it, "o")) lignes.push(el("span", { texte: "Membre de l'OTAN." }));

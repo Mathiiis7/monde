@@ -40,6 +40,8 @@ a { color: inherit; }
 .sommaire ul { margin: 0; padding-left: 20px; }
 .sommaire footer { margin-top: 48px; font-size: 14px; }
 .sommaire footer a { color: var(--encre); }
+/* un palier dont tous les sujets sont cachés (hidden dans index.html) disparaît aussi de la liste sans JavaScript */
+.sommaire section:not(:has(li:not([hidden]))) { display: none; }
 html.carte .sommaire { display: none; }
 
 /* ---- Les pages de texte : « Comment Monde est fait », mentions légales ---- */
