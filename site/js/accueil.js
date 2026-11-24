@@ -64,7 +64,7 @@ class Accueil {
   construireCadre() {
     const S = this.scene;
     S.append(el("div", { class: "cap", style: "left:24px" }, el("a", { class: "logo", href: "#planete", texte: "Monde" })));
-    const pages = ["Les grandes questions", "Les modèles et leurs noms", "Lexique"];
+    const pages = ["Les grandes questions", "Les modèles et leurs noms"];   // le lexique est dans le « ? »
     S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "left:50%;transform:translateX(-50%)" },
       pages.map((p) => el("button", { texte: p, onclick: (ev) => this.ouvrirPage(p, ev.currentTarget) })),
       this.construireAide()));
@@ -76,12 +76,13 @@ class Accueil {
     S.append(el("nav", { class: "ech", "aria-label": "Échelle de la carte" }, this.bPlus, el("div", { class: "rail" }, this.rail), this.bMoins));
   }
 
-  // « ? » au bout de la barre du haut : un petit menu vers les deux pages sur le site lui-même, « Comment Monde est
-  // fait » et les mentions légales (demande du 24/11/2026). Il se ferme par Échap ou par un clic ailleurs.
+  // « ? » au bout de la barre du haut : un petit menu vers le lexique et les deux pages sur le site lui-même, « Comment
+  // Monde est fait » et les mentions légales (demandes du 24/11/2026). Il se ferme par Échap ou par un clic ailleurs.
   construireAide() {
-    this.bAide = el("button", { class: "aide", texte: "?", "aria-label": "À propos de Monde", "aria-expanded": "false",
+    this.bAide = el("button", { class: "aide", texte: "?", "aria-label": "Lexique et à propos de Monde", "aria-expanded": "false",
       "aria-controls": "menu-aide", onclick: () => this.basculerAide() });
     this.menuAide = el("div", { class: "menu-aide", id: "menu-aide", hidden: true },
+      el("button", { texte: "Lexique", onclick: () => { this.basculerAide(false); this.ouvrirPage("Lexique"); } }),
       el("a", { href: "comment-monde-est-fait.html", texte: "Comment Monde est fait" }),
       el("a", { href: "mentions-legales.html", texte: "Mentions légales" }));
     addEventListener("pointerdown", (ev) => { if (!this.menuAide.hidden && !ev.target.closest(".aide-boite")) this.basculerAide(false); });
@@ -91,7 +92,7 @@ class Accueil {
   basculerAide(ouvrir = this.menuAide.hidden) {
     this.menuAide.hidden = !ouvrir;
     this.bAide.setAttribute("aria-expanded", String(ouvrir));
-    if (ouvrir) this.menuAide.querySelector("a").focus();
+    if (ouvrir) this.menuAide.firstElementChild.focus();
     return true;
   }
 
