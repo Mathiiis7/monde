@@ -8,13 +8,14 @@ html { scroll-behavior: smooth; }
 .f-retour { font-size: 15px; color: var(--encre-2); text-underline-offset: 3px; }
 .f-retour:hover { color: var(--encre); }
 
-.f-page { display: grid; grid-template-columns: 260px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 80px; }
+.f-page { display: grid; grid-template-columns: 330px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 80px; }
 
-.f-fil { position: sticky; top: 76px; align-self: start; max-height: calc(100vh - 96px); overflow: auto; font-size: 13px; line-height: 1.35; }
+/* l'horloge reste fixe pendant qu'on lit (demande du 25/11/2026) : elle tient dans la hauteur de la fenêtre */
+.f-fil { position: sticky; top: 72px; align-self: start; font-size: 13px; line-height: 1.3; }
 .f-fil h2 { font-family: var(--titre); font-weight: 500; font-size: 21px; margin: 0 0 6px; }
-.f-fil p { color: var(--encre-2); margin: 0 0 16px; }
+.f-fil p { color: var(--encre-2); margin: 0 0 12px; }
 .f-fil .f-petit { margin-top: 12px; font-size: 12px; }
-.f-points { position: relative; list-style: none; margin: 0 0 0 58px; padding: 0; border-left: 2px solid var(--filet); }
+.f-points { position: relative; list-style: none; margin: 0 0 0 104px; padding: 0; border-left: 2px solid var(--filet); }
 .f-points li { position: absolute; left: -6px; right: 0; }
 .f-points a { display: block; position: relative; padding-left: 18px; color: var(--encre-2); text-decoration: none; }
 .f-points a::before { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--encre-2); }
