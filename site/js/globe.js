@@ -80,14 +80,14 @@ function projeter(lon, lat, rp) {
 const a = (item, f) => item.f.indexOf(f) >= 0;
 const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
-// Les icônes posées sur le globe. Le fossile (demandes du 25/11/2026) : un trilobite au trait blanc dans un rond foncé,
-// dessiné pour Monde (variante F de outils/maquette/os/, choisie par Mathis après l'os et le crâne). C'est un symbole des
-// fossiles : il marque le lieu, ce n'est pas le fossile trouvé là.
+// Les icônes posées sur le globe. Le fossile (demandes du 25/11/2026) : une coquille enroulée avec ses côtes, comme celle
+// des ammonites, au trait blanc dans un rond foncé, centrée ; dessinée pour Monde (spirale calculée, outils/maquette/os/).
+// C'est un symbole des fossiles : il marque le lieu, ce n'est pas le fossile trouvé là.
 const ICONES = {
-  trilobite: () => {
+  coquille: () => {
     const s = svg("svg", { class: "ic", viewBox: "0 0 28 28", width: 32, height: 32, "aria-hidden": "true" });
     s.innerHTML = '<circle cx="14" cy="14" r="12.5" fill="#1f242b" stroke="#eef0f2" stroke-width="1.5"></circle>' +
-      '<path d="M8.2 12 C8.2 8.4 10.6 6.6 14 6.6 C17.4 6.6 19.8 8.4 19.8 12 L20.6 16.2 L18.6 13.2 C18.4 16.5 17.5 19.4 16.4 20.9 C15.7 21.8 14.9 22.2 14 22.2 C13.1 22.2 12.3 21.8 11.6 20.9 C10.5 19.4 9.6 16.5 9.4 13.2 L7.4 16.2 Z" fill="none" stroke="#eef0f2" stroke-width="1.3" stroke-linejoin="round"></path><path d="M8.4 12 H19.6" fill="none" stroke="#eef0f2" stroke-width="1"></path><path d="M12.4 7.4 C12.2 9 12.6 10.8 13.2 12 M15.6 7.4 C15.8 9 15.4 10.8 14.8 12" fill="none" stroke="#eef0f2" stroke-width=".9" stroke-linecap="round"></path><path d="M8.80 12.30 H19.20 M9.22 13.55 H18.78 M9.64 14.80 H18.36 M10.06 16.05 H17.94 M10.48 17.30 H17.52 M10.90 18.55 H17.10 M11.32 19.80 H16.68" fill="none" stroke="#eef0f2" stroke-width=".7" stroke-linecap="round"></path><path d="M12.4 12 C12.3 15.5 12.6 18.8 13.3 21.2 M15.6 12 C15.7 15.5 15.4 18.8 14.7 21.2" fill="none" stroke="#eef0f2" stroke-width=".9" stroke-linecap="round"></path><circle cx="11" cy="10.2" r=".8" fill="#eef0f2"></circle><circle cx="17" cy="10.2" r=".8" fill="#eef0f2"></circle>';
+      '<path d="M17.52 14.61 L17.54 14.67 L17.56 14.73 L17.58 14.80 L17.60 14.87 L17.61 14.94 L17.61 15.01 L17.61 15.08 L17.61 15.16 L17.60 15.23 L17.58 15.31 L17.56 15.38 L17.54 15.46 L17.51 15.53 L17.47 15.61 L17.43 15.68 L17.39 15.75 L17.33 15.82 L17.28 15.88 L17.22 15.95 L17.15 16.00 L17.08 16.06 L17.00 16.11 L16.92 16.16 L16.84 16.20 L16.75 16.24 L16.66 16.27 L16.56 16.30 L16.46 16.32 L16.36 16.34 L16.26 16.34 L16.15 16.34 L16.04 16.34 L15.93 16.33 L15.83 16.31 L15.72 16.28 L15.61 16.24 L15.50 16.20 L15.39 16.15 L15.29 16.09 L15.19 16.02 L15.09 15.95 L14.99 15.87 L14.90 15.78 L14.82 15.69 L14.74 15.58 L14.66 15.47 L14.59 15.36 L14.53 15.23 L14.47 15.11 L14.43 14.97 L14.39 14.84 L14.35 14.69 L14.33 14.55 L14.32 14.40 L14.32 14.24 L14.33 14.09 L14.34 13.93 L14.37 13.77 L14.41 13.62 L14.46 13.46 L14.52 13.30 L14.60 13.15 L14.68 13.00 L14.77 12.85 L14.88 12.71 L15.00 12.57 L15.12 12.44 L15.26 12.31 L15.41 12.19 L15.57 12.08 L15.73 11.98 L15.91 11.89 L16.09 11.81 L16.29 11.74 L16.49 11.68 L16.69 11.64 L16.90 11.61 L17.12 11.59 L17.34 11.58 L17.56 11.59 L17.79 11.62 L18.02 11.66 L18.25 11.71 L18.47 11.78 L18.70 11.87 L18.92 11.97 L19.14 12.09 L19.36 12.23 L19.56 12.38 L19.76 12.55 L19.96 12.73 L20.14 12.93 L20.31 13.14 L20.47 13.37 L20.62 13.61 L20.75 13.86 L20.87 14.13 L20.97 14.41 L21.06 14.69 L21.12 14.99 L21.17 15.30 L21.20 15.61 L21.21 15.93 L21.20 16.25 L21.16 16.58 L21.11 16.91 L21.03 17.24 L20.93 17.57 L20.80 17.89 L20.65 18.22 L20.48 18.53 L20.29 18.84 L20.07 19.15 L19.83 19.44 L19.57 19.72 L19.28 19.98 L18.97 20.23 L18.65 20.46 L18.30 20.68 L17.94 20.87 L17.55 21.04 L17.15 21.19 L16.74 21.32 L16.31 21.42 L15.87 21.49 L15.42 21.53 L14.96 21.55 L14.49 21.53 L14.02 21.49 L13.54 21.41 L13.06 21.30 L12.59 21.15 L12.11 20.97 L11.65 20.76 L11.19 20.52 L10.74 20.24 L10.30 19.93 L9.88 19.58 L9.47 19.20 L9.09 18.79 L8.73 18.35 L8.39 17.88 L8.07 17.38 L7.79 16.86 L7.54 16.30 L7.32 15.73 L7.14 15.13 L6.99 14.51 L6.88 13.87 L6.82 13.22 L6.79 12.56 L6.81 11.88 L6.87 11.20 L6.98 10.51 L7.14 9.82 L7.35 9.13 L7.60 8.45 L7.90 7.77 L8.25 7.10 L8.65 6.45" fill="none" stroke="#eef0f2" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.65 6.45 L14.74 12.90" fill="none" stroke="#eef0f2" stroke-width="1.35" stroke-linecap="round"></path><path d="M13.61 12.95 Q11.03 10.77 8.09 9.46 M13.41 14.09 Q10.50 12.99 7.54 12.76 M13.60 15.15 Q10.73 15.08 8.08 15.79 M14.09 16.01 Q11.57 16.84 9.48 18.27 M14.78 16.61 Q12.84 18.11 11.47 20.00 M15.56 16.92 Q14.34 18.82 13.72 20.89 M16.34 16.95 Q15.86 18.98 15.96 20.97 M17.03 16.73 Q17.23 18.65 17.94 20.35 M17.56 16.33 Q18.33 17.94 19.46 19.20 M17.90 15.82 Q19.06 16.98 20.44 17.73 M18.04 15.27 Q19.41 15.93 20.84 16.16" fill="none" stroke="#eef0f2" stroke-width=".75" stroke-linecap="round" opacity=".9"></path>';
     return s;
   }
 };
@@ -287,7 +287,7 @@ export class Globe {
         const action = l.sorte === "paris" ? () => this.basculer("institutions")
           : l.sorte === "territoire" ? () => this.allerVers(l.lon, l.lat)
           : () => this.appli.ouvrirSujet(l.sujet);
-        // un sujet porté par une icône (le trilobite de la Terre, demande du 25/11/2026) : son nom seulement au survol
+        // un sujet porté par une icône (la coquille fossile de la Terre, demande du 25/11/2026) : son nom seulement au survol
         l.classe = l.icone ? "pin icone" : "pin";
         l.el = l.icone
           ? el("button", { class: l.classe, "aria-label": l.nom, onclick: action }, ICONES[l.icone](), el("span", { class: "lb", texte: l.nom }))

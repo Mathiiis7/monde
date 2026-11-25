@@ -23,8 +23,8 @@
         { "sujet": "Le changement climatique", "gauche": 868, "y": 560 }
       ],
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
-      "_fossile": "Le trilobite dessiné qui ouvre « L'histoire de la Terre et du vivant » (choix de Mathis, 25/11/2026) : posé à Jebel Irhoud (Maroc), où ont été trouvés les plus anciens fossiles connus attribués à Homo sapiens ; relevé de la fiche, lignes 30 et 41.",
-      "lieux": [ { "sujet": "L'histoire de la Terre et du vivant", "nom": "L'histoire de la Terre et du vivant", "lon": -8.8725, "lat": 31.855, "icone": "trilobite" } ]
+      "_fossile": "La coquille fossile dessinée qui ouvre « L'histoire de la Terre et du vivant » (choix de Mathis, 25/11/2026) : posé à Jebel Irhoud (Maroc), où ont été trouvés les plus anciens fossiles connus attribués à Homo sapiens ; relevé de la fiche, lignes 30 et 41.",
+      "lieux": [ { "sujet": "L'histoire de la Terre et du vivant", "nom": "L'histoire de la Terre et du vivant", "lon": -8.8725, "lat": 31.855, "icone": "coquille" } ]
     },
     "monde": {
       "nom": "Les États", "echelle": "des États", "type": "pays", "donnees": "monde.json",

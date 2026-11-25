@@ -76,7 +76,7 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .titre-scene { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .titre-scene h1 { margin: 0; font-family: var(--titre); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -0.01em; }
 .titre-scene p { margin: 0; font-size: 14px; color: var(--encre-2); }
-/* Un sujet porté par une icône sur le globe (le trilobite dans son rond) : centrée sur le lieu ; son nom n'apparaît qu'au
+/* Un sujet porté par une icône sur le globe (la coquille fossile dans son rond) : centrée sur le lieu ; son nom n'apparaît qu'au
    survol ou au clavier */
 .pin.icone { gap: 6px; transform: translate(-16px, -50%); }
 .pin.icone.gauche { transform: translate(calc(-100% + 16px), -50%); }
