@@ -13,7 +13,6 @@
       "globe": { "cx": 640, "cy": 400, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
       "aria": "La Terre vue de l'espace, sans frontières. Glisse pour la faire tourner.",
       "orbite": [
-        { "sujet": "L'histoire de la Terre et du vivant", "droite": 520, "y": 105 },
         { "sujet": "Ce qui rend la Terre habitable", "droite": 440, "y": 170 },
         { "sujet": "Les grands cycles", "droite": 392, "y": 290 },
         { "sujet": "Les ressources", "droite": 392, "y": 410 },
@@ -26,21 +25,31 @@
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
       "lieux": [],
       "titre": "Comment habiter la Terre ?",
-      "voyage": {
-        "_lire": "Le voyage dans le temps (choix de Mathis, 25/11/2026 : « voyage express ») : un clic sur ce sujet fait reculer l'aiguille de l'horloge, défiler les époques sans s'arrêter, puis ouvre sa fiche. Toute l'histoire (duree, en millions d'années, comme dans la fiche) tient en 24 heures. Côtes reconstituées dans epoques.json (outils/site/faire-epoques.py) ; aujourd'hui, le globe habituel. Note de chaque carte : relevé de la fiche, lignes 34 à 38. lat : le globe se penche vers les continents de l'époque.",
-        "sujet": "L'histoire de la Terre et du vivant",
+      "frise": {
+        "_lire": "La frise sous le globe (choix de Mathis, 25/11/2026, à la place du voyage avec l'horloge) : un point par grand moment de la fiche, à intervalles égaux ; survol : son nom et, si « carte » est un âge (millions d'années), les terres de cette époque (epoques.json, outils/site/faire-epoques.py ; 0 : aujourd'hui ; null : pas de carte fiable, les terres s'estompent) ; clic : la fiche à son ancre. Heures : l'horloge de 24 heures de la fiche (4 500 millions d'années). Notes des cartes : relevé de la fiche, lignes 34 à 38. pencher : latitude visée pour voir les terres d'une époque.",
+        "nom": "L'histoire de la Terre et du vivant",
+        "page": "fiches/histoire-terre-vivant.html",
         "donnees": "epoques.json",
-        "duree": 4500,
-        "epoques": [
-          { "t": 539, "quand": "Il y a 539 millions d'années", "heure": "21 h 07", "note": 7, "lat": -30 },
-          { "t": 475, "quand": "Il y a 475 millions d'années", "heure": "21 h 28", "note": 7, "lat": -30 },
-          { "t": 390, "quand": "Il y a 390 millions d'années", "heure": "21 h 55", "note": 7, "lat": -20 },
-          { "t": 250, "quand": "Il y a 250 millions d'années", "heure": "22 h 40", "note": 9, "lat": 0 },
-          { "t": 66, "quand": "Il y a 66 millions d'années", "heure": "23 h 38", "note": 9, "lat": 2 },
-          { "t": 0, "quand": "Aujourd'hui", "heure": "minuit", "lat": 2 }
-        ],
-        "legende": "L'histoire de la Terre en 24 heures",
-        "source": "Les terres d'aujourd'hui replacées là où elles étaient, selon le modèle de Merdith et al. (2021), licence CC BY 4.0, calculé avec GPlates et simplifié par Monde. C'est une estimation, pas une photographie : le rivage de l'époque n'est pas dessiné."
+        "place": { "x0": 380, "x1": 900, "y": 656 },
+        "debut": "il y a 4,5 milliards d'années",
+        "fin": "aujourd'hui",
+        "pencher": { "539": -30, "475": -30, "390": -20 },
+        "source": "les terres d'aujourd'hui replacées là où elles étaient (Merdith et al. 2021, licence CC BY 4.0, simplifié par Monde).",
+        "sansCarte": "Pas de carte fiable des continents à cette époque.",
+        "moments": [
+          {"ancre": "p-1", "heure": "00 h 00", "quand": "il y a 4,5 milliards d'années", "nom": "La Terre se forme", "carte": null},
+          {"ancre": "p-7", "heure": "01 h 04", "quand": "il y a 4,3 milliards d'années", "nom": "De l'eau liquide, probablement", "carte": null},
+          {"ancre": "p-9", "heure": "05 h 20", "quand": "il y a 3,5 milliards d'années", "nom": "Les plus anciennes traces de vie admises", "carte": null},
+          {"ancre": "p-13", "heure": "11 h 12", "quand": "il y a 2,4 milliards d'années", "nom": "L'oxygène commence à s'accumuler", "carte": null},
+          {"ancre": "p-15", "heure": "15 h 12", "quand": "il y a 1,65 milliard d'années", "nom": "Les plus anciennes cellules à noyau admises", "carte": null},
+          {"ancre": "p-17", "heure": "21 h 07", "quand": "il y a 539 millions d'années", "nom": "Début du Cambrien", "carte": 539, "note": 7},
+          {"ancre": "p-18", "heure": "21 h 28", "quand": "il y a 475 millions d'années", "nom": "Les plantes sur la terre ferme", "carte": 475, "note": 7},
+          {"ancre": "p-19", "heure": "21 h 55", "quand": "il y a 390 millions d'années", "nom": "Les premières traces de pas", "carte": 390, "note": 7},
+          {"ancre": "p-22", "heure": "22 h 39", "quand": "il y a environ 252 millions d'années", "nom": "La plus grave des extinctions", "carte": 250, "note": 9},
+          {"ancre": "p-23", "heure": "23 h 38", "quand": "il y a 66 millions d'années", "nom": "Fin des dinosaures", "carte": 66, "note": 9},
+          {"ancre": "p-29", "heure": "23 h 59 et 14 s", "quand": "il y a 2,4 millions d'années", "nom": "Homo habilis", "carte": 0},
+          {"ancre": "p-30", "heure": "23 h 59 et 54 s", "quand": "il y a 315 000 ans", "nom": "Les plus anciens Homo sapiens", "carte": 0}
+        ]
       }
     },
     "monde": {

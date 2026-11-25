@@ -42,8 +42,6 @@ class Accueil {
     addEventListener("resize", () => this.ajuster());
     addEventListener("hashchange", () => this.suivreAdresse());
     addEventListener("keydown", (ev) => { if (ev.key === "Escape") this.echap(); });
-    // retour depuis une fiche par le bouton « retour » : la page revient telle qu'on l'a quittée, voyage fini compris
-    addEventListener("pageshow", (ev) => { if (ev.persisted && this.objet && this.objet.annulerVoyage) this.objet.annulerVoyage(); });
     this.jeton = 0;
     this.suivreAdresse();
   }
@@ -74,7 +72,8 @@ class Accueil {
 
   construireCadre() {
     const S = this.scene;
-    S.append(el("div", { class: "cap", style: "left:24px" }, el("a", { class: "logo", href: "#planete", texte: "Monde" })));
+    // ni logo « Monde » ni bouton de liste sur la carte (demande du 25/11/2026 : rien d'inutile à l'écran ; la réglette
+    // ramène à la planète) ; la liste reste dans la page sans JavaScript, et ?tout garde le bouton pour les essais
     // le lexique est dans le « ? » ; les grandes questions et les modèles restent cachés tant qu'on écrit les fiches une à une
     const pages = this.tout ? ["Les grandes questions", "Les modèles et leurs noms"] : [];
     S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "left:50%;transform:translateX(-50%)" },
@@ -159,7 +158,8 @@ class Accueil {
     this.scene.prepend(couche);
     const appli = {
       depart, territoires: this.reglages.territoires, visible: (nom) => this.visibles.has(nom),
-      ouvrirSujet: (nom) => this.ouvrirSujet(nom), ouvrirListe: () => this.ouvrirListe(),
+      ouvrirSujet: (nom) => this.ouvrirSujet(nom), ouvrirListe: () => this.ouvrirListe(), charger: (c) => charger(c),
+      titre: () => !this.titreVu, titreVu: () => { this.titreVu = true; },
       aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => this.k()
     };
     const ancien = this.objet, ancienne = this.couche;
@@ -240,7 +240,7 @@ class Accueil {
     this.bMoins.disabled = i === 0;
     this.bPlus.disabled = i === this.ordre.length - 1;
     const n = this.listes[this.actuel].length;
-    this.bListe.hidden = n === 0;                                     // aucun sujet montré à cette échelle
+    this.bListe.hidden = !this.tout || n === 0;                       // seulement pour les essais (?tout)
     this.bListe.textContent = n === 1 ? "1 sujet en liste" : `Les ${n} sujets en liste`;
   }
 
@@ -259,18 +259,7 @@ class Accueil {
   }
 
   ouvrirSujet(nom, depuisListe = false) {
-    const page = this.pages[nom];
-    if (page) {
-      // « L'histoire de la Terre et du vivant », sur la planète : le voyage dans le temps, puis la fiche (globe.js)
-      const v = this.reglages.paliers[this.actuel].voyage;
-      if (v && v.sujet === nom && this.objet && this.objet.voyager && !calme()) {
-        this.fermerPanneaux();
-        this.objet.voyager(charger("donnees/" + v.donnees), page);
-        return;
-      }
-      location.href = page;
-      return;
-    }
+    if (this.pages[nom]) { location.href = this.pages[nom]; return; }
     this.panneau(nom, "Fiche", "Cette fiche n'est pas encore écrite.", depuisListe);
   }
 
