@@ -6,6 +6,7 @@ import { Plan } from "./plan.js";
 import { el, boutonFermer, calme } from "./outils.js";
 
 const BASE = new URL("../", import.meta.url);
+const PART_LECTEUR = 0.56;                            // la part de l'écran que prend le panneau d'une fiche (styles.css : 56vw)
 const memoire = new Map();
 function charger(chemin, texte = false) {
   if (!memoire.has(chemin)) {
@@ -42,6 +43,7 @@ class Accueil {
     addEventListener("resize", () => this.ajuster());
     addEventListener("hashchange", () => this.suivreAdresse());
     addEventListener("keydown", (ev) => { if (ev.key === "Escape") this.echap(); });
+    addEventListener("message", (ev) => { if (ev.origin === location.origin && ev.data === "monde:fermer-fiche") this.fermerLecteur(); });
     this.jeton = 0;
     this.suivreAdresse();
   }
@@ -57,6 +59,7 @@ class Accueil {
     st.setProperty("--s", this.s);
     st.setProperty("--w", this.W + "px"); st.setProperty("--h", this.H + "px");
     st.setProperty("--dx", this.dx + "px"); st.setProperty("--dy", this.dy + "px");
+    if (this.lecteur && this.objet && this.objet.glisserVers) this.objet.glisserVers(...this.placeLecteur());
   }
 
   // Un point de l'écran, en pixels de la carte (le cadre de 1280 x 800).
@@ -85,7 +88,8 @@ class Accueil {
     this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id }, el("span", { class: "o" }), this.reglages.paliers[id].nom));
     this.bPlus = el("button", { class: "zb", "aria-label": "Zoomer", texte: "+", onclick: () => this.pas(1) });
     this.bMoins = el("button", { class: "zb", "aria-label": "Dézoomer", texte: "−", onclick: () => this.pas(-1) });
-    S.append(el("nav", { class: "ech", "aria-label": "Échelle de la carte" }, this.bPlus, el("div", { class: "rail" }, this.rail), this.bMoins));
+    this.ech = el("nav", { class: "ech", "aria-label": "Échelle de la carte" }, this.bPlus, el("div", { class: "rail" }, this.rail), this.bMoins);
+    S.append(this.ech);
   }
 
   // « ? » au bout de la barre du haut : un petit menu vers le lexique et les deux pages sur le site lui-même, « Comment
@@ -133,6 +137,7 @@ class Accueil {
     const avant = this.actuel;
     this.actuel = id;
     this.fermerPanneaux();
+    if (this.lecteur) { this.lecteur.remove(); this.lecteur = null; }
     this.majCadre();
     document.title = id === "planete" ? "Monde" : "Monde · " + cfg.nom;
     let attente = setTimeout(() => { attente = el("p", { class: "chargement", texte: "Chargement…" }); this.scene.append(attente); }, 200);
@@ -259,8 +264,51 @@ class Accueil {
   }
 
   ouvrirSujet(nom, depuisListe = false) {
-    if (this.pages[nom]) { location.href = this.pages[nom]; return; }
+    const page = this.pages[nom];
+    if (page) {
+      // sur un globe : la fiche dans le panneau de droite, la Terre glisse à gauche ; ailleurs : sa page
+      if (this.objet && this.objet.glisserVers) this.ouvrirLecteur(page);
+      else location.href = page;
+      return;
+    }
     this.panneau(nom, "Fiche", "Cette fiche n'est pas encore écrite.", depuisListe);
+  }
+
+  // ---- Le panneau de lecture d'une fiche (demande du 25/11/2026) : à droite, sur une part de l'écran (PART_LECTEUR),
+  // hors de la scène mise à l'échelle, pour que le texte garde sa taille ; la page de la fiche y est chargée en mode
+  // « panneau » (sans sa barre du haut). La croix, Échap ou un changement de palier le ferment.
+  ouvrirLecteur(page) {
+    this.fermerPanneaux();
+    const src = page + "?panneau";
+    if (this.lecteur) {
+      this.lecteur.querySelector("iframe").src = src;
+    } else {
+      this.lecteur = el("aside", { class: "lecteur", "aria-label": "Fiche" },
+        boutonFermer("Fermer la fiche", () => this.fermerLecteur()),
+        el("iframe", { title: "Fiche", src }));
+      document.body.append(this.lecteur);
+      setTimeout(() => this.lecteur && this.lecteur.classList.add("ouvert"), 20);
+    }
+    this.objet.glisserVers(...this.placeLecteur());
+    this.lecteur.querySelector(".fermer").focus();
+  }
+
+  // la Terre au milieu de la place qui reste entre la réglette et le panneau, en pixels de la carte ; elle rapetisse si
+  // elle n'y tient pas
+  placeLecteur() {
+    const k = this.k(), sc = this.scene.getBoundingClientRect();
+    const gauche = (this.ech.getBoundingClientRect().right - sc.left) * k - this.dx + 24;
+    const droite = this.W * (1 - PART_LECTEUR) - this.dx - 24;
+    const r = Math.min(this.objet.g.r, (droite - gauche) / 2 - 24);
+    return [(gauche + droite) / 2, Math.max(120, r)];
+  }
+
+  fermerLecteur() {
+    if (!this.lecteur) return false;
+    this.lecteur.remove();
+    this.lecteur = null;
+    if (this.objet && this.objet.glisserVers) this.objet.glisserVers(this.objet.g.cx);
+    return true;
   }
 
   ouvrirPage(nom) {
@@ -288,6 +336,7 @@ class Accueil {
 
   echap() {
     if (!this.menuAide.hidden) { this.basculerAide(false); this.bAide.focus(); return; }
+    if (this.fermerLecteur()) return;
     if (this.fermerPanneaux()) return;
     if (this.objet && this.objet.echap) this.objet.echap();
   }

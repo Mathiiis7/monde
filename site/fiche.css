@@ -8,6 +8,11 @@ html { scroll-behavior: smooth; }
 .f-retour { font-size: 15px; color: var(--encre-2); text-underline-offset: 3px; }
 .f-retour:hover { color: var(--encre); }
 
+/* dans le panneau de droite de l'accueil (?panneau) : sans la barre du haut, colonnes resserrées */
+html.en-panneau .f-barre { display: none; }
+html.en-panneau .f-page { grid-template-columns: 270px minmax(0, 1fr); gap: 32px; padding: 28px 72px 60px 28px; }
+html.en-panneau .f-fil { top: 24px; }
+html.en-panneau .f-texte h1 { font-size: 36px; }
 .f-page { display: grid; grid-template-columns: 330px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 80px; }
 
 /* la frise (à la place de l'horloge, 25/11/2026) reste fixe pendant qu'on lit : elle tient dans la hauteur de la fenêtre */

@@ -623,6 +623,24 @@ export class Globe {
     if (this.etat.choix != null) { this.etat.choix = null; if (redessiner) this.rendre(); }
   }
 
+  // La Terre glisse de côté quand une fiche s'ouvre dans le panneau de droite, et revient quand il se ferme (demande du
+  // 25/11/2026). La fin arrive aussi par la minuterie, si le navigateur ne dessine plus d'images.
+  glisserVers(cx, r = this.g.r) {
+    cancelAnimationFrame(this.glissement);
+    clearTimeout(this.glissementFin);
+    const x0 = this.vue.cx, r0 = this.vue.r;
+    const poser = (k) => { const e = lisse(k); this.vue = { ...this.vue, cx: x0 + (cx - x0) * e, r: r0 + (r - r0) * e }; this.majDisque(); this.rendre(); };
+    if (calme() || this.enVol) { poser(1); return; }
+    const t0 = performance.now(), duree = 550;
+    const pas = () => {
+      const k = Math.min(1, (performance.now() - t0) / duree);
+      poser(k);
+      if (k < 1) this.glissement = requestAnimationFrame(pas);
+    };
+    this.glissement = requestAnimationFrame(pas);
+    this.glissementFin = setTimeout(() => { cancelAnimationFrame(this.glissement); poser(1); }, duree + 60);
+  }
+
   // Échap : fermer ce qui est ouvert dans le palier. Renvoie vrai si quelque chose a été fermé.
   echap() {
     if (this.fiche) { this.fermerCarte(); return true; }
@@ -632,6 +650,8 @@ export class Globe {
 
   detruire() {
     this.detruit = true;
+    cancelAnimationFrame(this.glissement);
+    clearTimeout(this.glissementFin);
     this.etat.auto = false;
     clearTimeout(this.reprise);
     if (this.touches) removeEventListener("keydown", this.touches);

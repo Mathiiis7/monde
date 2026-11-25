@@ -20,3 +20,8 @@ document.addEventListener("click", (ev) => {
   note.setAttribute("aria-expanded", "true");
   document.getElementById("p-" + n).classList.add("actif");
 });
+
+// Ouverte dans le panneau de droite de l'accueil (?panneau) : Échap demande à l'accueil de fermer le panneau.
+if (document.documentElement.classList.contains("en-panneau") && window.parent !== window) {
+  addEventListener("keydown", (ev) => { if (ev.key === "Escape") window.parent.postMessage("monde:fermer-fiche", location.origin); });
+}
