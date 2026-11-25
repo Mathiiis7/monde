@@ -1,7 +1,12 @@
-/* Une fiche, présentation « le fil du temps » (choisie le 25/11/2026 pour « L'histoire de la Terre et du vivant ») :
-   l'horloge à gauche sert de sommaire, le texte à droite, la note de chaque phrase juste après elle. */
+/* Une fiche, présentation « l'horloge qu'on fait défiler » (choisie le 25/11/2026 pour « L'histoire de la Terre et du
+   vivant », maquette outils/maquette/horloge/centre.html, « une étape à la fois ») : un cadran de 24 heures en haut, au
+   centre ; le texte dessous, une étape à la fois, la note de chaque phrase juste après elle. Sans JavaScript, une seule
+   colonne qui se lit de haut en bas. */
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* avec l'horloge, fiche.js fait lui-même défiler (et en douceur au clic sur le cadran) : le défilement doux du navigateur
+   vers une adresse #p-N se battait avec lui et laissait la page entre deux étapes (relecture du 25/11/2026) */
+html.horloge { scroll-behavior: auto; }
 .f-corps { line-height: 1.65; }
 .f-barre { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: rgb(31 36 43 / .94); border-bottom: 1px solid var(--filet); }
 .f-barre .marque-page { font-family: var(--titre); font-size: 22px; font-weight: 600; text-decoration: none; }
@@ -15,48 +20,89 @@ html.en-panneau, html.en-panneau body { background: var(--surface); }
 /* une barre de défilement fine et discrète, à côté de laquelle la croix du panneau se place sans la toucher */
 html.en-panneau { scrollbar-width: thin; scrollbar-color: #4a535e transparent; }
 html.en-panneau .f-detail, html.en-panneau .f-source { background: var(--releve); }
-html.en-panneau .f-traits .f-axe, html.en-panneau .f-traits .f-lien { stroke: #59626d; }
-/* la marge du bas est dans la colonne du texte, pas dans la page : sinon la frise, qui ne peut pas dépasser le bas de la
-   page sans sa marge, remontait quand on arrivait tout en bas (25/11/2026) */
-html.en-panneau .f-page { grid-template-columns: 270px minmax(0, 1fr); gap: 32px; padding: 28px 52px 0 28px; }
+html.en-panneau .f-page { padding: 24px 52px 0 32px; }
 html.en-panneau .f-texte { padding-bottom: 60px; }
-html.en-panneau .f-fil { top: 24px; }
 /* texte plus petit dans le panneau (demande du 25/11/2026 : « le texte trop gros ») */
 html.en-panneau .f-texte { font-size: 15px; }
 html.en-panneau .f-texte h1 { font-size: 40px; }
-html.en-panneau .f-texte h2 { font-size: 25px; }
 html.en-panneau .f-chapeau { font-size: 16px; }
-.f-page { display: grid; grid-template-columns: 330px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 0; }
+.f-page { max-width: 680px; margin: 0 auto; padding: 32px 32px 0; }
 
-/* la frise (à la place de l'horloge, 25/11/2026) reste fixe pendant qu'on lit : elle tient dans la hauteur de la fenêtre */
-.f-fil { position: sticky; top: 72px; align-self: start; font-size: 13px; line-height: 1.3; }
-.f-fil h2 { font-family: var(--titre); font-weight: 500; font-size: 21px; margin: 0 0 6px; }
-.f-fil p { color: var(--encre-2); margin: 0 0 12px; }
-.f-fil .f-petit { margin-top: 12px; font-size: 12px; }
-.f-frise { position: relative; margin-left: 4px; }
-.f-traits { position: absolute; left: 0; top: 0; overflow: visible; }
-.f-traits .f-axe { stroke: var(--filet); stroke-width: 2; }
-.f-traits .f-lien { stroke: var(--filet); stroke-width: 1; fill: none; }
-.f-traits circle { fill: var(--encre-2); }
-.f-points { position: absolute; left: 32px; right: 0; top: 0; list-style: none; margin: 0; padding: 0; }
-.f-points li { position: absolute; left: 0; right: 0; }
-.f-points a { display: block; color: var(--encre); text-decoration: none; }
-.f-points a span { display: block; }
-.f-points time { display: block; font-size: 12px; color: var(--encre-2); }
-.f-points a:hover span, .f-points a:focus-visible span { color: var(--choix); }
-.f-points .f-maintenant span { display: block; color: var(--encre); font-weight: 600; }
-/* la frise suit la lecture (demande du 25/11/2026) : l'étape en cours ressort, les autres pâlissent */
-.f-frise.suivi .f-points li { opacity: .38; transition: opacity .3s; }
-.f-frise.suivi .f-points li.ici, .f-frise.suivi .f-points li:hover { opacity: 1; }
-.f-frise.suivi .f-points li.ici span { font-weight: 600; }
-.f-frise.suivi .f-traits circle { opacity: .45; transition: opacity .3s; }
-.f-frise.suivi .f-traits circle.ici { opacity: 1; fill: var(--encre); r: 5px; }
+/* Le cadran (dessiné par fiche.js) : dans une enveloppe de hauteur nulle qui colle en haut, sous la barre ; son fond
+   cache le texte qui monte derrière lui (--barre et --horloge : hauteurs mesurées par fiche.js). */
+.f-centre { display: none; }
+html.horloge .f-centre { display: block; position: sticky; top: var(--barre, 0px); height: 0; z-index: 4; }
+.f-horloge { position: absolute; left: -32px; right: -32px; top: 0; padding: 12px 0 10px; display: flex; flex-direction: column; align-items: center; text-align: center; background: linear-gradient(var(--fond) 90%, rgb(31 36 43 / 0)); }
+/* l'écart au-dessus du cadran reste le même quand on fait défiler (demande de Mathis du 25/11/2026) : la marge du haut de
+   la page passe dans l'horloge, qui colle dès le départ */
+html.horloge .f-page { padding-top: 0; }
+html.horloge .f-horloge { padding-top: 44px; }
+html.horloge.en-panneau .f-horloge { padding-top: 36px; }
+html.en-panneau .f-horloge { background: linear-gradient(var(--surface) 90%, rgb(43 49 57 / 0)); }
+.f-horloge .h-titre { font-family: var(--titre); font-size: 21px; font-weight: 500; margin: 0; line-height: 1.3; }
+.f-horloge .h-sous { color: var(--encre-2); font-size: 14px; margin: 2px 0 8px; line-height: 1.35; }
+.f-horloge .h-sous b { color: var(--choix); font-weight: 600; }
+.f-horloge .h-cadrans { position: relative; cursor: pointer; border-radius: 50%; }
+/* un clic sur l'horloge passe à l'étape suivante : au survol, le cadran s'éclaire un peu */
+.f-horloge .h-cadrans:hover .h-principal .bord { stroke: var(--encre-2); }
+.f-horloge svg { display: block; overflow: visible; }
+.f-horloge .h-principal { width: var(--d); height: var(--d); }
+.f-horloge .h { fill: var(--encre-2); font: 13px var(--sans); text-anchor: middle; dominant-baseline: middle; }
+.f-horloge .bord { fill: var(--surface); stroke: var(--filet); stroke-width: 1.5; }
+html.en-panneau .f-horloge .bord { fill: var(--fond); }
+.f-horloge .trait { stroke: var(--filet); stroke-width: 1; }
+.f-horloge .trait.gros { stroke: var(--encre-2); stroke-width: 1.6; }
+.f-horloge .passe { fill: rgb(242 215 126 / .16); }
+.f-horloge .aiguille { stroke: var(--choix); stroke-width: 2.5; stroke-linecap: round; }
+.f-horloge .axe { fill: var(--choix); }
+.f-horloge .pt { fill: var(--encre-2); }
+.f-horloge .pt.ici { fill: var(--choix); }
+.f-horloge .zone { fill: none; stroke: var(--encre); stroke-width: 1; }
+.f-horloge .notre { fill: var(--choix); }
+.f-horloge .h-lu { margin: 4px 0 0; font-family: var(--titre); font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+/* la loupe sur les 3 dernières minutes, à droite du cadran : elle apparaît avec la lignée humaine */
+.f-horloge .h-loupe { position: absolute; left: calc(100% + 28px); top: 6%; width: 150px; opacity: 0; transition: opacity .4s; }
+.f-horloge .h-loupe.on { opacity: 1; }
+.f-horloge .h-loupe svg { width: 130px; height: 130px; margin: 0 auto; }
+.f-horloge .h-loupe p { margin: 2px 0; font-size: 12.5px; color: var(--encre-2); line-height: 1.3; }
+
+/* Une étape à la fois (avec JavaScript) : chaque étape occupe un écran de défilement ; son texte reste sous le cadran,
+   apparaît quand on l'atteint et s'efface aussitôt qu'on la dépasse, avant de monter derrière l'horloge (demande de
+   Mathis du 25/11/2026). Une étape dont une note est ouverte défile normalement, pour qu'on lise tout le détail. */
+html.horloge .f-tete { min-height: calc(var(--horloge, 320px) + 4px + 14vh); padding-top: calc(var(--horloge, 320px) + 4px); box-sizing: border-box; transition: opacity .3s; }
+html.horloge .f-tete.parti { opacity: 0; }
+/* chaque étape vaut environ trois crans de molette (demande de Mathis du 25/11/2026 : « il faut défiler trop longtemps ») ;
+   son texte, de hauteur nulle pour la page, apparaît directement à sa place sous le cadran au lieu de monter du bas de
+   l'écran, et y reste jusqu'à ce que la suivante le remplace */
+html.horloge .f-etape { min-height: 38vh; }
+html.horloge .f-in { position: sticky; top: calc(var(--barre, 0px) + var(--horloge, 320px) + 4px); height: 0; transition: opacity .4s, transform .4s; }
+/* toutes cachées tant que fiche.js n'a pas dit laquelle est en cours (sinon elles se superposaient au chargement) */
+html.horloge .f-etape:not(.ici) .f-in { opacity: 0; pointer-events: none; }
+html.horloge .f-etape.avenir .f-in { transform: translateY(10px); }
+html.horloge .f-etape.passe .f-in { transition-duration: .12s; }
+html.horloge .f-etape.ouvert .f-in { position: static; height: auto; }
+/* la dernière étape reste sous le cadran jusqu'en bas de la page : une hauteur (pas une marge, que le collage ignore) */
+html.horloge .f-etape.f-dernier { min-height: 48vh; }  /* fiche.js l'ajuste à la fenêtre */
+html.horloge .f-etape.f-dernier .f-in { height: auto; }
+@media (prefers-reduced-motion: reduce) { html.horloge .f-in, html.horloge .f-tete, .f-horloge .h-loupe { transition: none; transform: none !important; } }
+.f-consigne { color: var(--encre-2); font-size: 15px; }
+/* avec l'horloge, le titre et le chapeau ne s'affichent pas (demande de Mathis du 25/11/2026 : l'horloge dit déjà de quoi
+   il s'agit) ; ils restent dans la page pour les lecteurs d'écran, les moteurs et la version sans JavaScript */
+html.horloge .f-tete h1, html.horloge .f-tete .f-chapeau { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+html.horloge .f-consigne { text-align: center; margin: 0; }
+.f-quoi { font-family: var(--titre); font-weight: 600; font-size: 25px; line-height: 1.2; margin: 0 0 8px; }
+html.en-panneau .f-quoi { font-size: 22px; }
+.f-message { font-family: var(--titre); font-size: 24px; line-height: 1.3; }
+.f-message em { font-style: normal; color: var(--choix); }
+.f-question { font-family: var(--titre); font-size: 21px; line-height: 1.3; color: var(--encre-2); }
+/* avec l'horloge, « Calcul de Monde » est déjà au-dessus du cadran (Mathis, 25/11/2026) */
+html.horloge .f-etape .f-calcul { display: none; }
+html:not(.horloge) .f-etape { margin-bottom: 28px; }
 
 .f-texte { font-size: 17px; padding-bottom: 80px; }
 .f-texte h1 { font-family: var(--titre); font-weight: 700; font-size: 48px; line-height: 1.05; letter-spacing: -0.01em; margin: 0 0 14px; }
 /* les titres de partie se détachent du texte (demande du 25/11/2026) : un filet au-dessus, plus d'espace, plus gras */
-.f-texte h2 { font-family: var(--titre); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 52px 0 14px; padding-top: 22px; border-top: 1px solid #4a535e; scroll-margin-top: 80px; }
-.f-texte .f-chapeau + h2 { border-top: 0; padding-top: 0; margin-top: 36px; }
+.f-sources h2 { font-family: var(--titre); font-weight: 600; font-size: 28px; line-height: 1.2; }
 .f-texte p, .f-texte ul { margin: 0 0 14px; }
 .f-texte ul { padding-left: 22px; }
 .f-chapeau { color: var(--encre-2); font-size: 18px; }
@@ -78,8 +124,14 @@ html.en-panneau .f-chapeau { font-size: 16px; }
 .f-autre::before { content: "Une autre affirmation"; display: block; font-size: 12px; font-weight: 600; color: var(--encre-2); margin-bottom: 2px; }
 html.en-panneau .f-autre { background: var(--fond); }
 /* le texte des blocs « Comment on le sait » prend le gris de leur titre (demande du 25/11/2026) */
-.f-preuve { border-left: 2px solid var(--encre-2); padding-left: 14px; color: var(--encre-2); }
-.f-preuve::before { content: "Comment on le sait"; display: block; font-size: 12px; font-weight: 600; color: var(--encre-2); }
+.f-preuve { border-left: 2px solid var(--encre-2); padding-left: 14px; color: var(--encre-2); margin: 0 0 14px; }
+/* replié par défaut, ouvert d'un clic (demande du 25/11/2026) */
+.f-preuve > summary { cursor: pointer; list-style: none; font-size: 12px; font-weight: 600; width: max-content; }
+.f-preuve > summary::-webkit-details-marker { display: none; }
+.f-preuve > summary::before { content: "▸"; display: inline-block; width: 1em; transition: transform .15s; }
+.f-preuve[open] > summary::before { transform: rotate(90deg); }
+.f-preuve > summary:hover { color: var(--encre); }
+.f-preuve > p { margin: 6px 0 0; }
 
 /* Le détail d'une note : sous le paragraphe (ouvert par fiche.js), et en bas de page pour toutes */
 .f-detail, .f-source { background: var(--surface); border: 1px solid var(--filet); border-radius: 10px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
@@ -94,7 +146,6 @@ html.en-panneau .f-autre { background: var(--fond); }
 .f-source { margin: 0 0 12px; scroll-margin-top: 80px; }
 .f-source:target { border-color: var(--choix); }
 .f-haut { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--encre-2); }
-.f-pied { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--filet); display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }
 
 /* Ce qui fait baisser la note (au clic sur un rond) : les points perdus, du plus lourd au plus léger */
 .f-pertes { list-style: none; margin: 6px 0 10px; padding: 0; }
