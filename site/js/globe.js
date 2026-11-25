@@ -625,7 +625,7 @@ export class Globe {
     const angle = (hh) => (hh / 24) * 2 * Math.PI - Math.PI / 2;
     const aiguille = svg("line", { x1: 100, y1: 100, x2: 100, y2: 30, stroke: "#f2d77e", "stroke-width": 3, "stroke-linecap": "round" });
     const cadran = svg("svg", { viewBox: "0 0 200 200", "aria-hidden": "true" },
-      svg("circle", { cx: 100, cy: 100, r: 76, fill: "none", stroke: "#2c3137", "stroke-width": 2 }),
+      svg("circle", { cx: 100, cy: 100, r: 76, fill: "none", stroke: "#434b55", "stroke-width": 2 }),
       [0, 6, 12, 18].map((k) => svg("text", { x: 100 + Math.cos(angle(k)) * 90, y: 104 + Math.sin(angle(k)) * 90, fill: "#a3aab2", "font-size": 11, "text-anchor": "middle", texte: k + " h" })),
       aiguille, svg("circle", { cx: 100, cy: 100, r: 5, fill: "#f2d77e" }));
     const quand = el("b", { class: "quand", texte: "Aujourd'hui" }), heure = el("span", { class: "heure", texte: "minuit" });

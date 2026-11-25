@@ -3,7 +3,7 @@
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .f-corps { line-height: 1.65; }
-.f-barre { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: rgb(11 13 16 / .94); border-bottom: 1px solid var(--filet); }
+.f-barre { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: rgb(31 36 43 / .94); border-bottom: 1px solid var(--filet); }
 .f-barre .marque-page { font-family: var(--titre); font-size: 22px; font-weight: 600; text-decoration: none; }
 .f-retour { font-size: 15px; color: var(--encre-2); text-underline-offset: 3px; }
 .f-retour:hover { color: var(--encre); }
