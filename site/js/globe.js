@@ -78,6 +78,7 @@ function projeter(lon, lat, rp) {
 }
 
 const a = (item, f) => item.f.indexOf(f) >= 0;
+const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
 export class Globe {
   constructor(couche, cfg, donnees, appli) {
@@ -114,7 +115,6 @@ export class Globe {
     const dlon = ((but.lon - d.lon) % 360 + 540) % 360 - 180;
     const lr0 = Math.log(d.r), lr1 = Math.log(g.r), descend = lr1 > lr0;
     const duree = Math.min(1600, 500 + 300 * Math.abs(lr1 - lr0) / Math.LN2);
-    const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
     const pose = (k) => {
       const fp = lisse(borne(descend ? k / 0.7 : (k - 0.3) / 0.7, 0, 1));
       const fr = lisse(borne(descend ? (k - 0.3) / 0.7 : k / 0.7, 0, 1));
@@ -238,7 +238,11 @@ export class Globe {
     if (this.planete) {
       this.pTerre = svg("path", { fill: "#a9b08c", stroke: "#a9b08c", "stroke-width": .5, "stroke-linejoin": "round" });
       this.pGlace = svg("path", { fill: "#e3e7ea", stroke: "#e3e7ea", "stroke-width": .5, "stroke-linejoin": "round" });
-      this.carte.append(this.pTerre, this.pGlace);
+      const g = svg("g");
+      g.append(this.pTerre, this.pGlace);
+      this.carte.append(g);
+      // les terres d'aujourd'hui ; le voyage dans le temps ajoute une couche par époque, qui se fondent l'une dans l'autre
+      this.couches = [{ t: 0, anneaux: this.anneaux, terre: this.pTerre, glace: this.pGlace, el: g, op: 1 }];
     } else {
       // Le socle : sous les pays voisins, un trait épais de leur couleur bouche les fentes entre leurs côtes (Natural Earth)
       // et celles des régions ou des départements (Etalab), qui ne tombent pas exactement au même endroit.
@@ -355,7 +359,7 @@ export class Globe {
     const sens = { ArrowLeft: [-pl, 0], ArrowRight: [pl, 0], ArrowUp: [0, pn], ArrowDown: [0, -pn] };
     this.touches = (ev) => {
       const d = sens[ev.key];
-      if (!d || this.detruit || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      if (!d || this.detruit || this.voyage || ev.altKey || ev.ctrlKey || ev.metaKey) return;
       if (ev.target && ev.target.closest && ev.target.closest(".pan, .panneau, .menu-aide, input, textarea")) return;
       ev.preventDefault();
       this.aller(d[0], d[1]);
@@ -388,11 +392,22 @@ export class Globe {
     const cle = [e.lon.toFixed(2), e.lat.toFixed(2), g.r.toFixed(1), g.cx.toFixed(1), g.cy.toFixed(1)].join(), neuf = cle !== this.cle;
     this.cle = cle;
     if (this.planete) {
-      if (neuf) {
-        const terre = [], glace = [];
-        for (const an of this.anneaux) { const t = trace(an.v, rp, g); if (t) (an.glace ? glace : terre).push(t); }
-        this.pTerre.setAttribute("d", terre.join(""));
-        this.pGlace.setAttribute("d", glace.join(""));
+      // une couche invisible n'est pas recalculée ; elle le sera quand elle réapparaîtra
+      for (const c of this.couches) {
+        if (c.op <= 0) {
+          if (c.vue) { c.el.setAttribute("opacity", 0); c.vue = false; }
+          continue;
+        }
+        if (c.cle !== cle) {
+          const terre = [], glace = [];
+          for (const an of c.anneaux) { const t = trace(an.v, rp, g); if (t) (an.glace ? glace : terre).push(t); }
+          c.terre.setAttribute("d", terre.join(""));
+          if (c.glace) c.glace.setAttribute("d", glace.join(""));
+          c.cle = cle;
+        }
+        const op = c.op >= 1 ? "1" : c.op.toFixed(3);
+        if (op !== c.opVue) { c.el.setAttribute("opacity", op); c.opVue = op; }
+        c.vue = true;
       }
     } else {
       for (const it of this.items) {
@@ -505,7 +520,7 @@ export class Globe {
     S.addEventListener("pointerdown", (ev) => {
       const p = this.appli.point(ev);
       const g = this.vue;
-      if (this.enVol || Math.hypot(p.x - g.cx, p.y - g.cy) > g.r + 24) return;
+      if (this.enVol || this.voyage || Math.hypot(p.x - g.cx, p.y - g.cy) > g.r + 24) return;
       this.arreter();
       cancelAnimationFrame(this.anim);
       this.glisse = { x: ev.clientX, y: ev.clientY, lon: this.etat.lon, lat: this.etat.lat, k: this.appli.k(), i: this.planete ? null : indice(ev), bouge: false, p };
@@ -590,8 +605,144 @@ export class Globe {
     if (this.etat.choix != null) { this.etat.choix = null; if (redessiner) this.rendre(); }
   }
 
+  // ---- Le voyage dans le temps (planète ; choix de Mathis du 25/11/2026 : « voyage express », sans s'arrêter) ----
+  // Un clic sur « L'histoire de la Terre et du vivant » : l'aiguille de l'horloge de 24 heures recule de minuit à la plus
+  // ancienne époque, puis les continents reconstitués défilent jusqu'à aujourd'hui, et la page de la fiche s'ouvre.
+  // Aucune carte avant la plus ancienne époque : il n'en existe pas de fiable. Chaque étape finit par sa minuterie, même
+  // si le navigateur ne dessine plus d'images (onglet caché) ; Échap ou un changement de palier l'interrompt. Si les
+  // cartes ne se chargent pas, la fiche s'ouvre quand même.
+  voyager(chargement, page) {
+    const v = this.cfg.voyage;
+    if (!v || this.voyage || this.enVol || this.detruit) return;
+    const vg = this.voyage = { annule: false, minuteries: [], arrets: [] };
+    this.fermerCarte();
+    clearTimeout(this.reprise);
+    if (!this.etat.auto) this.lancer();                         // le globe continue de tourner pendant le voyage
+    const E = v.epoques, h = (t) => 24 * (1 - t / v.duree);
+    const ouvrir = () => { if (!vg.annule) { vg.fini = true; location.href = page; } };
+
+    // l'horloge, à droite du globe, et la source des cartes en bas, à la place du titre
+    const angle = (hh) => (hh / 24) * 2 * Math.PI - Math.PI / 2;
+    const aiguille = svg("line", { x1: 100, y1: 100, x2: 100, y2: 30, stroke: "#f2d77e", "stroke-width": 3, "stroke-linecap": "round" });
+    const cadran = svg("svg", { viewBox: "0 0 200 200", "aria-hidden": "true" },
+      svg("circle", { cx: 100, cy: 100, r: 76, fill: "none", stroke: "#2c3137", "stroke-width": 2 }),
+      [0, 6, 12, 18].map((k) => svg("text", { x: 100 + Math.cos(angle(k)) * 90, y: 104 + Math.sin(angle(k)) * 90, fill: "#a3aab2", "font-size": 11, "text-anchor": "middle", texte: k + " h" })),
+      aiguille, svg("circle", { cx: 100, cy: 100, r: 5, fill: "#f2d77e" }));
+    const quand = el("b", { class: "quand", texte: "Aujourd'hui" }), heure = el("span", { class: "heure", texte: "minuit" });
+    vg.ui = [
+      el("div", { class: "voyage", role: "status" }, el("span", { class: "voyage-titre", texte: v.legende }), cadran, quand, heure),
+      el("p", { class: "voyage-source", texte: v.source })
+    ];
+    this.couche.append(...vg.ui);
+    this.couche.classList.add("en-voyage");
+    const poserAiguille = (hh) => { aiguille.setAttribute("x2", (100 + Math.cos(angle(hh)) * 64).toFixed(1)); aiguille.setAttribute("y2", (100 + Math.sin(angle(hh)) * 64).toFixed(1)); };
+    const annoncer = (e) => {
+      quand.textContent = e.quand;
+      heure.textContent = (e.t ? e.heure : "minuit") + (e.note ? ` · carte notée ${e.note} sur 10` : "");
+    };
+
+    // une étape animée : f(k), k de 0 à 1 ; la dernière valeur est posée par la minuterie si les images ne viennent plus
+    const anim = (duree, f) => new Promise((fini) => {
+      const t0 = performance.now();
+      let fait = false, image = 0;
+      const finir = () => {
+        if (fait) return;
+        fait = true;
+        cancelAnimationFrame(image);
+        if (!vg.annule) { f(1); this.rendre(); }
+        fini(!vg.annule);
+      };
+      const pas = () => {
+        if (fait) return;
+        const k = (performance.now() - t0) / duree;
+        if (k >= 1) { finir(); return; }
+        f(k);
+        this.dessiner();
+        image = requestAnimationFrame(pas);
+      };
+      image = requestAnimationFrame(pas);
+      vg.minuteries.push(setTimeout(finir, duree + 30));
+      vg.arrets.push(finir);
+    });
+    const attendre = (ms) => anim(ms, () => {});
+    const couche = (t) => this.couches.find((c) => c.t === t);
+    const fondre = (de, vers, k) => { const a = couche(de), b = couche(vers); if (a) a.op = 1 - k; if (b) b.op = k; };
+
+    // les cartes arrivent pendant que l'aiguille recule (8 secondes au plus)
+    let pretes = null;
+    const attente = Promise.race([
+      chargement.then((d) => (pretes = this.ajouterEpoques(d, E))).catch((err) => { console.error(err); pretes = false; }),
+      new Promise((r) => vg.minuteries.push(setTimeout(r, 8000)))
+    ]);
+
+    (async () => {
+      const lat0 = this.etat.lat, h0 = h(E[0].t);
+      // 1. l'aiguille recule de minuit à la plus ancienne époque (2 s) ; les continents s'y fondent à la fin
+      // (le nom de l'époque change quand ses continents sont à moitié apparus)
+      let dit = false;
+      let ok = await anim(2000, (k) => {
+        poserAiguille(24 + (h0 - 24) * lisse(k));
+        this.etat.lat = lat0 + (E[0].lat - lat0) * lisse(k);
+        if (pretes) fondre(0, E[0].t, borne((k - 0.55) / 0.45, 0, 1));
+        if (pretes && !dit && k >= 0.775) { annoncer(E[0]); dit = true; }
+      });
+      if (!ok) return;
+      if (!pretes) { await attente; if (vg.annule) return; }
+      if (!pretes) { ouvrir(); return; }                         // pas de cartes : la fiche, tout de suite
+      fondre(0, E[0].t, 1);
+      if (!dit) annoncer(E[0]);
+      this.rendre();
+      if (!(await attendre(1200))) return;
+      // 2. les époques suivantes, 1,5 s chacune : l'aiguille avance et les continents se fondent en 0,75 s
+      for (let i = 1; i < E.length; i++) {
+        const a = E[i - 1], b = E[i];
+        dit = false;
+        ok = await anim(1500, (k) => {
+          const f = lisse(Math.min(1, k / 0.5));
+          poserAiguille(h(a.t) + (h(b.t) - h(a.t)) * f);
+          this.etat.lat = a.lat + (b.lat - a.lat) * f;
+          fondre(a.t, b.t, f);
+          if (!dit && k >= 0.25) { annoncer(b); dit = true; }
+        });
+        if (!ok) return;
+      }
+      // 3. aujourd'hui, un instant, puis la fiche
+      if (await attendre(700)) ouvrir();
+    })();
+  }
+
+  // Les couches des époques passées (une fois pour toutes) ; renvoie vrai si toutes sont là.
+  ajouterEpoques(donnees, E) {
+    for (const e of E) {
+      if (!e.t || this.couches.some((c) => c.t === e.t)) continue;
+      if (!donnees[e.t]) return false;
+      const p = svg("path", { fill: "#a9b08c", stroke: "#a9b08c", "stroke-width": 1.2, "stroke-linejoin": "round", opacity: 0 });
+      this.carte.insertBefore(p, this.disque[2]);                // sous la lumière et le bord du globe
+      this.couches.push({ t: e.t, anneaux: donnees[e.t].map((r) => ({ glace: false, v: contour(r, 1, 20, 1.5) })), terre: p, el: p, op: 0 });
+    }
+    return true;
+  }
+
+  // Interrompre le voyage (Échap, changement de palier, retour depuis la fiche) : le globe d'aujourd'hui revient.
+  annulerVoyage() {
+    const vg = this.voyage;
+    if (!vg) return false;
+    vg.annule = true;
+    vg.minuteries.forEach(clearTimeout);
+    vg.arrets.forEach((f) => f());
+    this.voyage = null;
+    if (this.detruit) return true;
+    for (const x of vg.ui) x.remove();
+    this.couche.classList.remove("en-voyage");
+    for (const c of this.couches) c.op = c.t === 0 ? 1 : 0;
+    this.etat.lat = this.g.lat;
+    this.rendre();
+    return true;
+  }
+
   // Échap : fermer ce qui est ouvert dans le palier. Renvoie vrai si quelque chose a été fermé.
   echap() {
+    if (this.annulerVoyage()) return true;
     if (this.fiche) { this.fermerCarte(); return true; }
     if (this.etat.outremer) { this.basculer("outremer"); return true; }
     return false;
@@ -599,6 +750,7 @@ export class Globe {
 
   detruire() {
     this.detruit = true;
+    this.annulerVoyage();
     this.etat.auto = false;
     clearTimeout(this.reprise);
     if (this.touches) removeEventListener("keydown", this.touches);

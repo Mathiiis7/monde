@@ -76,6 +76,15 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .titre-scene { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .titre-scene h1 { margin: 0; font-family: var(--titre); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -0.01em; }
 .titre-scene p { margin: 0; font-size: 14px; color: var(--encre-2); }
+/* Le voyage dans le temps de la planète (globe.js, voyager) : les sujets et le titre s'effacent, l'horloge arrive à droite */
+.couche.en-voyage .orb, .couche.en-voyage .titre-scene { opacity: 0; pointer-events: none; transition: opacity .4s; }
+.voyage { position: absolute; left: 900px; top: 228px; width: 280px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; pointer-events: none; animation: apparait .5s both; }
+.voyage svg { width: 200px; height: 200px; }
+.voyage-titre { font-size: 13px; color: var(--encre-2); }
+.voyage .quand { font-family: var(--titre); font-size: 26px; font-weight: 500; line-height: 1.15; }
+.voyage .heure { font-size: 14px; color: var(--encre-2); }
+.voyage-source { position: absolute; left: 260px; right: 260px; bottom: 34px; margin: 0; text-align: center; font-size: 13px; line-height: 1.5; color: var(--encre-2); pointer-events: none; animation: apparait .5s both; }
+@keyframes apparait { from { opacity: 0; } }
 
 /* Le haut de l'écran */
 .cap { position: absolute; top: 18px; width: max-content; display: flex; gap: 2px; align-items: center; padding: 5px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 5; }

@@ -42,6 +42,8 @@ class Accueil {
     addEventListener("resize", () => this.ajuster());
     addEventListener("hashchange", () => this.suivreAdresse());
     addEventListener("keydown", (ev) => { if (ev.key === "Escape") this.echap(); });
+    // retour depuis une fiche par le bouton « retour » : la page revient telle qu'on l'a quittée, voyage fini compris
+    addEventListener("pageshow", (ev) => { if (ev.persisted && this.objet && this.objet.annulerVoyage) this.objet.annulerVoyage(); });
     this.jeton = 0;
     this.suivreAdresse();
   }
@@ -257,7 +259,18 @@ class Accueil {
   }
 
   ouvrirSujet(nom, depuisListe = false) {
-    if (this.pages[nom]) { location.href = this.pages[nom]; return; }
+    const page = this.pages[nom];
+    if (page) {
+      // « L'histoire de la Terre et du vivant », sur la planète : le voyage dans le temps, puis la fiche (globe.js)
+      const v = this.reglages.paliers[this.actuel].voyage;
+      if (v && v.sujet === nom && this.objet && this.objet.voyager && !calme()) {
+        this.fermerPanneaux();
+        this.objet.voyager(charger("donnees/" + v.donnees), page);
+        return;
+      }
+      location.href = page;
+      return;
+    }
     this.panneau(nom, "Fiche", "Cette fiche n'est pas encore écrite.", depuisListe);
   }
 

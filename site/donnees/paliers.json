@@ -25,7 +25,23 @@
       ],
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
       "lieux": [],
-      "titre": "Comment habiter la Terre ?"
+      "titre": "Comment habiter la Terre ?",
+      "voyage": {
+        "_lire": "Le voyage dans le temps (choix de Mathis, 25/11/2026 : « voyage express ») : un clic sur ce sujet fait reculer l'aiguille de l'horloge, défiler les époques sans s'arrêter, puis ouvre sa fiche. Toute l'histoire (duree, en millions d'années, comme dans la fiche) tient en 24 heures. Côtes reconstituées dans epoques.json (outils/site/faire-epoques.py) ; aujourd'hui, le globe habituel. Note de chaque carte : relevé de la fiche, lignes 34 à 38. lat : le globe se penche vers les continents de l'époque.",
+        "sujet": "L'histoire de la Terre et du vivant",
+        "donnees": "epoques.json",
+        "duree": 4500,
+        "epoques": [
+          { "t": 539, "quand": "Il y a 539 millions d'années", "heure": "21 h 07", "note": 7, "lat": -30 },
+          { "t": 475, "quand": "Il y a 475 millions d'années", "heure": "21 h 28", "note": 7, "lat": -30 },
+          { "t": 390, "quand": "Il y a 390 millions d'années", "heure": "21 h 55", "note": 7, "lat": -20 },
+          { "t": 250, "quand": "Il y a 250 millions d'années", "heure": "22 h 40", "note": 9, "lat": 0 },
+          { "t": 66, "quand": "Il y a 66 millions d'années", "heure": "23 h 38", "note": 9, "lat": 2 },
+          { "t": 0, "quand": "Aujourd'hui", "heure": "minuit", "lat": 2 }
+        ],
+        "legende": "L'histoire de la Terre en 24 heures",
+        "source": "Les terres d'aujourd'hui replacées là où elles étaient, selon le modèle de Merdith et al. (2021), licence CC BY 4.0, calculé avec GPlates et simplifié par Monde. C'est une estimation, pas une photographie : le rivage de l'époque n'est pas dessiné."
+      }
     },
     "monde": {
       "nom": "Les États", "echelle": "des États", "type": "pays", "donnees": "monde.json",
