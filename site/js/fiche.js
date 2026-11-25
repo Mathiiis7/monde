@@ -4,13 +4,14 @@ document.addEventListener("click", (ev) => {
   const note = ev.target.closest(".f-note");
   if (!note) return;
   ev.preventDefault();
+  cacherBulle();
   const n = note.dataset.ligne, p = note.closest("p");
   const ouvert = p.nextElementSibling && p.nextElementSibling.classList.contains("f-detail") ? p.nextElementSibling : null;
   const memeNote = ouvert && ouvert.dataset.ligne === n;
   document.querySelectorAll(".f-detail").forEach((d) => d.remove());
   document.querySelectorAll(".f-note[aria-expanded='true']").forEach((b) => b.setAttribute("aria-expanded", "false"));
   document.querySelectorAll(".f-phrase.actif").forEach((s) => s.classList.remove("actif"));
-  if (memeNote) return;
+  if (memeNote) return montrerBulle(note);  // le détail se ferme : la bulle revient tout de suite (demande du 25/11/2026)
   const source = document.getElementById("n-" + n);
   const detail = document.createElement("div");
   detail.className = "f-detail";
@@ -21,9 +22,24 @@ document.addEventListener("click", (ev) => {
   document.getElementById("p-" + n).classList.add("actif");
 });
 
+// Un clic sur un moment de la frise (ou sur « Revenir à la phrase ») mène à la phrase : elle est surlignée 3 secondes,
+// puis le surlignage s'efface (demande du 25/11/2026 ; avant, il restait tant que l'adresse finissait par #p-N).
+function cibler() {
+  const m = location.hash.match(/^#(p-\w+)$/), s = m && document.getElementById(m[1]);
+  if (!s) return;
+  clearTimeout(s.minuteur);
+  s.classList.remove("fin-cible");
+  s.classList.add("cible");
+  s.minuteur = setTimeout(() => { s.classList.add("fin-cible"); s.classList.remove("cible"); }, 3000);
+}
+document.addEventListener("click", (ev) => { if (ev.target.closest('a[href^="#p-"]')) setTimeout(cibler, 0); });
+cibler();
+
 // Au survol d'une note (ou au clavier) : une bulle avec la note, son mot et pourquoi (demande du 25/11/2026).
 let bulle = null;
 function montrerBulle(note) {
+  // pas de bulle quand le détail de cette note est déjà ouvert : il dit la même chose (demande du 25/11/2026)
+  if (note.getAttribute("aria-expanded") === "true") return cacherBulle();
   if (!bulle) { bulle = document.createElement("div"); bulle.className = "f-bulle"; bulle.setAttribute("role", "tooltip"); document.body.append(bulle); }
   bulle.innerHTML = "";
   const b = document.createElement("b"); b.textContent = note.dataset.note; b.style.color = note.dataset.couleur || "";
@@ -71,7 +87,27 @@ function placerFrise() {
   const total = Math.ceil(Math.max(H + decalage, ...noms.map((y, i) => y + decalage + hauteurs[i])));
   svg.setAttribute("height", total);
   frise.style.height = total + "px";
+  suivre();
 }
+
+// La frise suit la lecture (demande du 25/11/2026) : l'étape dont la phrase est passée sous la ligne de lecture (un tiers
+// de la fenêtre) est mise en avant, les autres pâlissent ; tout en bas de la page, c'est « Aujourd'hui ».
+function suivre() {
+  if (!frise) return;
+  const lis = [...frise.querySelectorAll("li")], ligne = innerHeight * 0.35;
+  let ici = 0;
+  lis.forEach((li, i) => {
+    const a = li.querySelector('a[href^="#p-"]'), p = a && document.getElementById(a.getAttribute("href").slice(1));
+    if (p && p.getBoundingClientRect().top <= ligne) ici = i;
+  });
+  const se = document.scrollingElement;
+  if (se.scrollTop >= se.scrollHeight - innerHeight - 2 && lis[lis.length - 1].classList.contains("f-maintenant")) ici = lis.length - 1;
+  const ronds = frise.querySelectorAll(".f-traits circle");
+  lis.forEach((li, i) => { li.classList.toggle("ici", i === ici); if (ronds[i]) ronds[i].classList.toggle("ici", i === ici); });
+  frise.classList.add("suivi");
+}
+let suiviPrevu = false;
+addEventListener("scroll", () => { if (!suiviPrevu) { suiviPrevu = true; requestAnimationFrame(() => { suiviPrevu = false; suivre(); }); } }, { passive: true });
 placerFrise();
 addEventListener("resize", placerFrise);
 if (document.fonts) document.fonts.ready.then(placerFrise);
