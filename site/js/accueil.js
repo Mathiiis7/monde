@@ -287,6 +287,11 @@ class Accueil {
         boutonFermer("Fermer la fiche", () => this.fermerLecteur()),
         el("iframe", { title: "Fiche", src }));
       document.body.append(this.lecteur);
+      // la croix à 12 px de la barre de défilement de la fiche, comme du haut (sa largeur change selon le navigateur)
+      const cadre = this.lecteur.querySelector("iframe"), croix = this.lecteur.querySelector(".fermer");
+      cadre.addEventListener("load", () => {
+        try { croix.style.right = (cadre.offsetWidth - cadre.contentDocument.documentElement.clientWidth) + 12 + "px"; } catch (err) { /* page d'ailleurs */ }
+      });
       setTimeout(() => this.lecteur && this.lecteur.classList.add("ouvert"), 20);
     }
     this.objet.glisserVers(...this.placeLecteur());

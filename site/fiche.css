@@ -10,9 +10,19 @@ html { scroll-behavior: smooth; }
 
 /* dans le panneau de droite de l'accueil (?panneau) : sans la barre du haut, colonnes resserrées */
 html.en-panneau .f-barre { display: none; }
-html.en-panneau .f-page { grid-template-columns: 270px minmax(0, 1fr); gap: 32px; padding: 28px 72px 60px 28px; }
+/* le panneau se détache du fond de la carte (demande du 25/11/2026) : un ton plus clair que le fond */
+html.en-panneau, html.en-panneau body { background: var(--surface); }
+/* une barre de défilement fine et discrète, à côté de laquelle la croix du panneau se place sans la toucher */
+html.en-panneau { scrollbar-width: thin; scrollbar-color: #4a535e transparent; }
+html.en-panneau .f-detail, html.en-panneau .f-source { background: var(--releve); }
+html.en-panneau .f-traits .f-axe, html.en-panneau .f-traits .f-lien { stroke: #59626d; }
+html.en-panneau .f-page { grid-template-columns: 270px minmax(0, 1fr); gap: 32px; padding: 28px 52px 60px 28px; }
 html.en-panneau .f-fil { top: 24px; }
-html.en-panneau .f-texte h1 { font-size: 36px; }
+/* texte plus petit dans le panneau (demande du 25/11/2026 : « le texte trop gros ») */
+html.en-panneau .f-texte { font-size: 15px; }
+html.en-panneau .f-texte h1 { font-size: 40px; }
+html.en-panneau .f-texte h2 { font-size: 25px; }
+html.en-panneau .f-chapeau { font-size: 16px; }
 .f-page { display: grid; grid-template-columns: 330px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 80px; }
 
 /* la frise (à la place de l'horloge, 25/11/2026) reste fixe pendant qu'on lit : elle tient dans la hauteur de la fenêtre */
@@ -33,17 +43,24 @@ html.en-panneau .f-texte h1 { font-size: 36px; }
 .f-points a:hover span, .f-points a:focus-visible span { color: var(--choix); }
 
 .f-texte { font-size: 17px; }
-.f-texte h1 { font-family: var(--titre); font-weight: 500; font-size: 42px; line-height: 1.1; margin: 0 0 10px; }
-.f-texte h2 { font-family: var(--titre); font-weight: 500; font-size: 27px; line-height: 1.2; margin: 40px 0 10px; scroll-margin-top: 80px; }
+.f-texte h1 { font-family: var(--titre); font-weight: 700; font-size: 48px; line-height: 1.05; letter-spacing: -0.01em; margin: 0 0 14px; }
+/* les titres de partie se détachent du texte (demande du 25/11/2026) : un filet au-dessus, plus d'espace, plus gras */
+.f-texte h2 { font-family: var(--titre); font-weight: 600; font-size: 28px; line-height: 1.2; margin: 52px 0 14px; padding-top: 22px; border-top: 1px solid #4a535e; scroll-margin-top: 80px; }
+.f-texte .f-chapeau + h2 { border-top: 0; padding-top: 0; margin-top: 36px; }
 .f-texte p, .f-texte ul { margin: 0 0 14px; }
 .f-texte ul { padding-left: 22px; }
 .f-chapeau { color: var(--encre-2); font-size: 18px; }
-.f-lire { color: var(--encre-2); font-size: 14px; border: 1px solid var(--filet); border-radius: 8px; padding: 10px 14px; }
 .f-renvoi, .f-calcul { color: var(--encre-2); }
 .f-phrase { border-radius: 3px; scroll-margin-top: 120px; transition: background .2s; }
-.f-phrase:target, .f-phrase.actif { background: rgb(242 215 126 / .14); }
-.f-note { font-size: 12px; color: var(--encre-2); white-space: nowrap; text-decoration: none; border-bottom: 1px dotted var(--encre-2); margin-left: 2px; }
-.f-note:hover, .f-note[aria-expanded="true"] { color: var(--encre); border-bottom-color: var(--encre); }
+.f-phrase:target, .f-phrase.actif, .f-phrase.survol { background: rgb(242 215 126 / .14); }
+/* la note : un petit rond de couleur (du vert au rouge), rempli à proportion de la note (demande du 25/11/2026) ; au survol, une bulle (fiche.js) */
+.f-note { display: inline-flex; align-items: center; vertical-align: -1px; padding: 2px; margin-left: 1px; border-radius: 50%; text-decoration: none; }
+.f-jauge { display: block; transition: transform .15s; }
+.f-jauge-fond { fill: none; stroke: var(--c, var(--choix)); stroke-width: 1.4; }
+.f-jauge-plein { fill: var(--c, var(--choix)); }
+.f-note:hover .f-jauge, .f-note:focus-visible .f-jauge, .f-note[aria-expanded="true"] .f-jauge { transform: scale(1.25); }
+.f-bulle { position: fixed; z-index: 30; max-width: 300px; padding: 9px 12px; border-radius: 8px; background: var(--releve); border: 1px solid #4a535e; box-shadow: var(--ombre); font-size: 13px; line-height: 1.45; color: var(--encre-2); pointer-events: none; }
+.f-bulle b { display: block; color: var(--choix); font-size: 13.5px; margin-bottom: 2px; }
 .f-preuve { border-left: 2px solid var(--encre-2); padding-left: 14px; }
 .f-preuve::before { content: "Comment on le sait"; display: block; font-size: 12px; font-weight: 600; color: var(--encre-2); }
 
@@ -61,3 +78,8 @@ html.en-panneau .f-texte h1 { font-size: 36px; }
 .f-source:target { border-color: var(--choix); }
 .f-haut { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--encre-2); }
 .f-pied { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--filet); display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }
+
+/* Ce qui fait baisser la note (au clic sur un rond) : les points perdus, du plus lourd au plus léger */
+.f-pertes { list-style: none; margin: 6px 0 10px; padding: 0; }
+.f-pertes li { display: flex; gap: 10px; margin: 3px 0; }
+.f-pertes b { flex: none; min-width: 1.6em; font-variant-numeric: tabular-nums; color: var(--encre-2); font-weight: 600; }

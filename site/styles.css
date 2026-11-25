@@ -86,10 +86,11 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .pin.icone:hover .lb, .pin.icone:focus-visible .lb { opacity: 1; }
 
 /* Le panneau de lecture d'une fiche, à droite (accueil.js, ouvrirLecteur) : hors de la scène, il garde la taille du texte */
-.lecteur { position: fixed; top: 0; right: 0; bottom: 0; width: 56vw; z-index: 20; background: var(--fond); border-left: 1px solid var(--filet); box-shadow: -12px 0 32px rgb(0 0 0 / .35); transform: translateX(100%); transition: transform .5s cubic-bezier(.45,0,.25,1); }
+.lecteur { position: fixed; top: 0; right: 0; bottom: 0; width: 56vw; z-index: 20; background: var(--surface); border-left: 1px solid #4a535e; box-shadow: -16px 0 40px rgb(0 0 0 / .5); transform: translateX(100%); transition: transform .5s cubic-bezier(.45,0,.25,1); }
 .lecteur.ouvert { transform: none; }
 .lecteur iframe { display: block; width: 100%; height: 100%; border: 0; }
-.lecteur .fermer { top: 12px; right: 16px; z-index: 1; background: var(--surface); border-radius: 10px; box-shadow: var(--ombre); color: var(--encre); }
+.lecteur .fermer { top: 12px; right: 23px; width: 28px; height: 28px; z-index: 1; background: var(--releve); border-radius: 8px; box-shadow: var(--ombre); color: var(--encre); }
+.lecteur .fermer svg { width: 13px; height: 13px; }
 @media (prefers-reduced-motion: reduce) { .lecteur { transition: none; } }
 
 /* Le haut de l'écran */
