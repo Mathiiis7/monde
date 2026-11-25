@@ -80,12 +80,14 @@ function projeter(lon, lat, rp) {
 const a = (item, f) => item.f.indexOf(f) >= 0;
 const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
-// Les icônes posées sur le globe. Le fossile : une ammonite (coquille enroulée), dessinée pour Monde.
+// Les icônes posées sur le globe. Le fossile (demandes du 25/11/2026) : un trilobite au trait blanc dans un rond foncé,
+// dessiné pour Monde (variante F de outils/maquette/os/, choisie par Mathis après l'os et le crâne). C'est un symbole des
+// fossiles : il marque le lieu, ce n'est pas le fossile trouvé là.
 const ICONES = {
-  fossile: () => {
-    const s = svg("svg", { class: "ic", viewBox: "0 0 28 28", width: 28, height: 28, "aria-hidden": "true" });
+  trilobite: () => {
+    const s = svg("svg", { class: "ic", viewBox: "0 0 28 28", width: 32, height: 32, "aria-hidden": "true" });
     s.innerHTML = '<circle cx="14" cy="14" r="12.5" fill="#1f242b" stroke="#eef0f2" stroke-width="1.5"></circle>' +
-      '<path d="M14 14.6c-.9 0-1.4-.8-1-1.6.5-1 2-1.1 2.8-.3 1.1 1.1.8 3-.5 3.8-1.7 1.1-4 .4-4.8-1.4-1-2.2.2-4.8 2.4-5.6 2.7-1 5.7.5 6.5 3.2 1 3.2-1 6.6-4.2 7.4-3.7.9-7.4-1.4-8.1-5.1" fill="none" stroke="#eef0f2" stroke-width="1.6" stroke-linecap="round"></path>';
+      '<path d="M8.2 12 C8.2 8.4 10.6 6.6 14 6.6 C17.4 6.6 19.8 8.4 19.8 12 L20.6 16.2 L18.6 13.2 C18.4 16.5 17.5 19.4 16.4 20.9 C15.7 21.8 14.9 22.2 14 22.2 C13.1 22.2 12.3 21.8 11.6 20.9 C10.5 19.4 9.6 16.5 9.4 13.2 L7.4 16.2 Z" fill="none" stroke="#eef0f2" stroke-width="1.3" stroke-linejoin="round"></path><path d="M8.4 12 H19.6" fill="none" stroke="#eef0f2" stroke-width="1"></path><path d="M12.4 7.4 C12.2 9 12.6 10.8 13.2 12 M15.6 7.4 C15.8 9 15.4 10.8 14.8 12" fill="none" stroke="#eef0f2" stroke-width=".9" stroke-linecap="round"></path><path d="M8.80 12.30 H19.20 M9.22 13.55 H18.78 M9.64 14.80 H18.36 M10.06 16.05 H17.94 M10.48 17.30 H17.52 M10.90 18.55 H17.10 M11.32 19.80 H16.68" fill="none" stroke="#eef0f2" stroke-width=".7" stroke-linecap="round"></path><path d="M12.4 12 C12.3 15.5 12.6 18.8 13.3 21.2 M15.6 12 C15.7 15.5 15.4 18.8 14.7 21.2" fill="none" stroke="#eef0f2" stroke-width=".9" stroke-linecap="round"></path><circle cx="11" cy="10.2" r=".8" fill="#eef0f2"></circle><circle cx="17" cy="10.2" r=".8" fill="#eef0f2"></circle>';
     return s;
   }
 };
@@ -285,7 +287,7 @@ export class Globe {
         const action = l.sorte === "paris" ? () => this.basculer("institutions")
           : l.sorte === "territoire" ? () => this.allerVers(l.lon, l.lat)
           : () => this.appli.ouvrirSujet(l.sujet);
-        // un sujet porté par une icône (le fossile de la Terre, demande du 25/11/2026) : son nom seulement au survol
+        // un sujet porté par une icône (le trilobite de la Terre, demande du 25/11/2026) : son nom seulement au survol
         l.classe = l.icone ? "pin icone" : "pin";
         l.el = l.icone
           ? el("button", { class: l.classe, "aria-label": l.nom, onclick: action }, ICONES[l.icone](), el("span", { class: "lb", texte: l.nom }))
