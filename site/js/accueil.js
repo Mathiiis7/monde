@@ -27,8 +27,11 @@ class Accueil {
     // index.html?tout les montre tous (pour les essais).
     this.tout = new URLSearchParams(location.search).has("tout");
     this.listes = {};
+    this.pages = {};
     for (const s of document.querySelectorAll("#sommaire section[data-palier]")) {
       this.listes[s.dataset.palier] = [...s.querySelectorAll("li")].filter((li) => this.tout || !li.hidden).map((li) => li.textContent.trim());
+      // un sujet dont la fiche est publiée porte, dans index.html, un lien vers sa page
+      s.querySelectorAll("li a[href]").forEach((a) => { this.pages[a.textContent.trim()] = a.getAttribute("href"); });
     }
     this.visibles = new Set(Object.values(this.listes).flat());
     this.scene = document.getElementById("scene");
@@ -254,6 +257,7 @@ class Accueil {
   }
 
   ouvrirSujet(nom, depuisListe = false) {
+    if (this.pages[nom]) { location.href = this.pages[nom]; return; }
     this.panneau(nom, "Fiche", "Cette fiche n'est pas encore écrite.", depuisListe);
   }
 

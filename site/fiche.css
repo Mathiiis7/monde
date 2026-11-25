@@ -1,0 +1,53 @@
+/* Une fiche, présentation « le fil du temps » (choisie le 25/11/2026 pour « L'histoire de la Terre et du vivant ») :
+   l'horloge à gauche sert de sommaire, le texte à droite, la note de chaque phrase juste après elle. */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.f-corps { line-height: 1.65; }
+.f-barre { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: rgb(11 13 16 / .94); border-bottom: 1px solid var(--filet); }
+.f-barre .marque-page { font-family: var(--titre); font-size: 22px; font-weight: 600; text-decoration: none; }
+.f-retour { font-size: 15px; color: var(--encre-2); text-underline-offset: 3px; }
+.f-retour:hover { color: var(--encre); }
+
+.f-page { display: grid; grid-template-columns: 260px minmax(0, 680px); gap: 56px; justify-content: center; padding: 32px 32px 80px; }
+
+.f-fil { position: sticky; top: 76px; align-self: start; max-height: calc(100vh - 96px); overflow: auto; font-size: 13px; line-height: 1.35; }
+.f-fil h2 { font-family: var(--titre); font-weight: 500; font-size: 21px; margin: 0 0 6px; }
+.f-fil p { color: var(--encre-2); margin: 0 0 16px; }
+.f-fil .f-petit { margin-top: 12px; font-size: 12px; }
+.f-points { position: relative; list-style: none; margin: 0 0 0 58px; padding: 0; border-left: 2px solid var(--filet); }
+.f-points li { position: absolute; left: -6px; right: 0; }
+.f-points a { display: block; position: relative; padding-left: 18px; color: var(--encre-2); text-decoration: none; }
+.f-points a::before { content: ""; position: absolute; left: 0; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--encre-2); }
+.f-points a:hover, .f-points a:focus-visible { color: var(--encre); }
+.f-points a:hover::before { background: var(--choix); }
+.f-points time { position: absolute; right: calc(100% + 6px); top: 0; white-space: nowrap; color: var(--encre); font-variant-numeric: tabular-nums; }
+
+.f-texte { font-size: 17px; }
+.f-texte h1 { font-family: var(--titre); font-weight: 500; font-size: 42px; line-height: 1.1; margin: 0 0 10px; }
+.f-texte h2 { font-family: var(--titre); font-weight: 500; font-size: 27px; line-height: 1.2; margin: 40px 0 10px; scroll-margin-top: 80px; }
+.f-texte p, .f-texte ul { margin: 0 0 14px; }
+.f-texte ul { padding-left: 22px; }
+.f-chapeau { color: var(--encre-2); font-size: 18px; }
+.f-lire { color: var(--encre-2); font-size: 14px; border: 1px solid var(--filet); border-radius: 8px; padding: 10px 14px; }
+.f-renvoi, .f-calcul { color: var(--encre-2); }
+.f-phrase { border-radius: 3px; scroll-margin-top: 120px; transition: background .2s; }
+.f-phrase:target, .f-phrase.actif { background: rgb(242 215 126 / .14); }
+.f-note { font-size: 12px; color: var(--encre-2); white-space: nowrap; text-decoration: none; border-bottom: 1px dotted var(--encre-2); margin-left: 2px; }
+.f-note:hover, .f-note[aria-expanded="true"] { color: var(--encre); border-bottom-color: var(--encre); }
+.f-preuve { border-left: 2px solid var(--encre-2); padding-left: 14px; }
+.f-preuve::before { content: "Comment on le sait"; display: block; font-size: 12px; font-weight: 600; color: var(--encre-2); }
+
+/* Le détail d'une note : sous le paragraphe (ouvert par fiche.js), et en bas de page pour toutes */
+.f-detail, .f-source { background: var(--surface); border: 1px solid var(--filet); border-radius: 10px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
+.f-detail { margin: -4px 0 16px; }
+.f-detail h3, .f-source h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; font-family: var(--sans); }
+.f-detail p, .f-source p { margin: 0; }
+.f-detail ul, .f-source ul { margin: 6px 0 0; padding-left: 18px; color: var(--encre-2); }
+.f-detail li, .f-source li { margin-bottom: 4px; }
+.f-detail .f-haut { display: none; }
+.f-sources { margin-top: 56px; padding-top: 8px; border-top: 1px solid var(--filet); }
+.f-sources > p { color: var(--encre-2); font-size: 15px; }
+.f-source { margin: 0 0 12px; scroll-margin-top: 80px; }
+.f-source:target { border-color: var(--choix); }
+.f-haut { display: inline-block; margin-top: 6px; font-size: 13px; color: var(--encre-2); }
+.f-pied { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--filet); display: flex; gap: 24px; flex-wrap: wrap; font-size: 15px; }

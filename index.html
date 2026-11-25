@@ -20,19 +20,20 @@
 
 <!-- Les sujets de chaque palier : la carte les lit ici, et c'est ce qui s'affiche sans JavaScript.
      Un sujet marqué hidden n'apparaît nulle part (listes, globe, ville, maison) : on retire hidden quand sa fiche
-     est prête (demande du 24/11/2026 : on écrit une fiche à la fois). index.html?tout montre tout, pour les essais. -->
+     est prête (demande du 24/11/2026 : on écrit une fiche à la fois). index.html?tout montre tout, pour les essais.
+     Un sujet dont la fiche est publiée porte un lien vers sa page : la carte l'ouvre au lieu du panneau « pas encore écrite ». -->
 <main id="sommaire" class="sommaire">
 <header>
 <p class="marque">Monde</p>
 <h1>Comment habiter la Terre ?</h1>
-<p>Les sujets, de la planète à la maison. Les fiches ne sont pas encore écrites.</p>
+<p>Les sujets, de la planète à la maison. Les fiches s'écrivent une à une.</p>
 <noscript><p>La carte qu'on zoome demande JavaScript : voici les mêmes sujets, en liste.</p></noscript>
 </header>
 
 <section data-palier="planete">
 <h2>La planète</h2>
 <ul>
-<li>L'histoire de la Terre et du vivant</li>
+<li><a href="fiches/histoire-terre-vivant.html">L'histoire de la Terre et du vivant</a></li>
 <li hidden>Ce qui rend la Terre habitable</li>
 <li hidden>Les grands cycles</li>
 <li hidden>Les ressources</li>
