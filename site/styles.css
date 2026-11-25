@@ -76,21 +76,13 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .titre-scene { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .titre-scene h1 { margin: 0; font-family: var(--titre); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -0.01em; }
 .titre-scene p { margin: 0; font-size: 14px; color: var(--encre-2); }
-/* La frise de l'histoire de la Terre, sous le globe de la planète (globe.js, construireFrise) */
-.frise { position: absolute; height: 44px; cursor: pointer; }
-.frise::before { content: ""; position: absolute; left: 0; right: 0; top: 14px; height: 2px; border-radius: 1px; background: var(--filet); }
-.frise-pt { position: absolute; top: 15px; width: 14px; height: 14px; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; }
-.frise-pt::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; transform: translate(-50%, -50%); border-radius: 50%; background: var(--encre); border: 2px solid var(--fond); transition: width .15s, height .15s, background .15s; }
-.frise-pt.vu::after, .frise-pt:focus-visible::after { width: 13px; height: 13px; background: var(--choix); z-index: 1; }
-.frise-pt.vu { z-index: 1; }
-.frise-pt:focus-visible { outline-offset: -2px; }
-.frise-bout { position: absolute; top: 28px; font-size: 12px; color: var(--encre-2); white-space: nowrap; left: 0; transform: translateX(-12px); }
-.frise-bout.droite { left: auto; right: 0; transform: translateX(12px); }
-.frise-bulle { position: absolute; z-index: 4; width: max-content; max-width: 320px; transform: translate(-50%, calc(-100% - 6px)); display: flex; flex-direction: column; gap: 3px; padding: 10px 13px; border-radius: 10px; background: var(--surface); box-shadow: var(--ombre); font-size: 13px; line-height: 1.4; pointer-events: none; }
-.frise-bulle b { font-size: 14px; }
-.globe-inconnu { position: absolute; transform: translate(-50%, -52%); font: 500 170px/1 var(--titre); color: var(--encre); opacity: 0; transition: opacity .45s; pointer-events: none; }
-.globe-inconnu.vu { opacity: .85; }
-.frise-bulle .petit { color: var(--encre-2); font-size: 12px; }
+/* Un sujet porté par une icône sur le globe (le fossile) : son nom n'apparaît qu'au survol ou au clavier */
+.pin.icone { gap: 6px; transform: translate(-14px, -50%); }
+.pin.icone.gauche { transform: translate(calc(-100% + 14px), -50%); }
+.pin.icone .ic { flex: none; filter: drop-shadow(0 1px 2px rgb(0 0 0 / .5)); transition: transform .15s; }
+.pin.icone:hover .ic, .pin.icone:focus-visible .ic { transform: scale(1.15); }
+.pin.icone .lb { opacity: 0; transition: opacity .15s; pointer-events: none; }
+.pin.icone:hover .lb, .pin.icone:focus-visible .lb { opacity: 1; }
 
 /* Le haut de l'écran */
 .cap { position: absolute; top: 18px; width: max-content; display: flex; gap: 2px; align-items: center; padding: 5px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 5; }

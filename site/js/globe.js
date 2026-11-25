@@ -80,6 +80,16 @@ function projeter(lon, lat, rp) {
 const a = (item, f) => item.f.indexOf(f) >= 0;
 const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
+// Les icônes posées sur le globe. Le fossile : une ammonite (coquille enroulée), dessinée pour Monde.
+const ICONES = {
+  fossile: () => {
+    const s = svg("svg", { class: "ic", viewBox: "0 0 28 28", width: 28, height: 28, "aria-hidden": "true" });
+    s.innerHTML = '<circle cx="14" cy="14" r="12.5" fill="#1f242b" stroke="#eef0f2" stroke-width="1.5"></circle>' +
+      '<path d="M14 14.6c-.9 0-1.4-.8-1-1.6.5-1 2-1.1 2.8-.3 1.1 1.1.8 3-.5 3.8-1.7 1.1-4 .4-4.8-1.4-1-2.2.2-4.8 2.4-5.6 2.7-1 5.7.5 6.5 3.2 1 3.2-1 6.6-4.2 7.4-3.7.9-7.4-1.4-8.1-5.1" fill="none" stroke="#eef0f2" stroke-width="1.6" stroke-linecap="round"></path>';
+    return s;
+  }
+};
+
 export class Globe {
   constructor(couche, cfg, donnees, appli) {
     this.couche = couche; this.cfg = cfg; this.g = cfg.globe; this.appli = appli;
@@ -241,7 +251,7 @@ export class Globe {
       const g = svg("g");
       g.append(this.pTerre, this.pGlace);
       this.carte.append(g);
-      // les terres d'aujourd'hui ; la frise ajoute une couche par époque passée, qui se fondent l'une dans l'autre
+      // les terres d'aujourd'hui (une seule couche depuis que la frise a quitté la carte, 25/11/2026)
       this.couches = [{ t: 0, anneaux: this.anneaux, terre: this.pTerre, glace: this.pGlace, el: g, op: 1 }];
     } else {
       // Le socle : sous les pays voisins, un trait épais de leur couleur bouche les fentes entre leurs côtes (Natural Earth)
@@ -275,7 +285,11 @@ export class Globe {
         const action = l.sorte === "paris" ? () => this.basculer("institutions")
           : l.sorte === "territoire" ? () => this.allerVers(l.lon, l.lat)
           : () => this.appli.ouvrirSujet(l.sujet);
-        l.el = el("button", { class: "pin", onclick: action }, el("span", { class: "pt" }), el("span", { class: "lb", texte: l.nom }));
+        // un sujet porté par une icône (le fossile de la Terre, demande du 25/11/2026) : son nom seulement au survol
+        l.classe = l.icone ? "pin icone" : "pin";
+        l.el = l.icone
+          ? el("button", { class: l.classe, "aria-label": l.nom, onclick: action }, ICONES[l.icone](), el("span", { class: "lb", texte: l.nom }))
+          : el("button", { class: l.classe, onclick: action }, el("span", { class: "pt" }), el("span", { class: "lb", texte: l.nom }));
       }
       C.append(l.el);
     }
@@ -289,7 +303,6 @@ export class Globe {
       // pas de titre à l'écran (demande du 25/11/2026 : « Comment habiter la Terre ? » n'apparaît nulle part pour
       // l'instant, à revoir avec la page d'accueil) ; un titre pour les lecteurs d'écran seulement
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
-      if (this.cfg.frise) this.construireFrise();
     } else {
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
       this.boites();
@@ -445,7 +458,7 @@ export class Globe {
       s.left = px + "px"; s.top = py + "px"; s.opacity = op.toFixed(2); s.visibility = op > 0 ? "visible" : "hidden";
       if (l.sorte !== "exemple") {
         const gauche = l.gauche ?? (this.planete ? x > 0.3 : this.cfg.coteAuto != null && x > this.cfg.coteAuto);
-        const classe = "pin" + (gauche ? " gauche" : "");
+        const classe = (l.classe || "pin") + (gauche ? " gauche" : "");
         if (l.el.className !== classe) l.el.className = classe;
       }
     }
@@ -608,122 +621,6 @@ export class Globe {
     if (this.etat.choix != null) { this.etat.choix = null; if (redessiner) this.rendre(); }
   }
 
-  // ---- La frise de l'histoire de la Terre (planète ; choix de Mathis du 25/11/2026, à la place du voyage avec
-  // l'horloge) : une ligne sous le globe, un point par grand moment de la fiche, à l'échelle du temps (demande du même
-  // jour) : les derniers moments sont donc serrés au bout, et ceux qui tombent au même endroit font un seul point.
-  // La souris choisit le moment le plus proche ; le clavier passe d'un point à l'autre. Survoler donne le nom et, quand
-  // une carte existe pour cette époque, le globe montre où étaient les terres ; un clic ouvre la fiche à ce moment-là.
-  // Avant la plus ancienne carte, il n'en existe pas de fiable : les terres d'aujourd'hui s'estompent.
-  construireFrise() {
-    const f = this.cfg.frise, { x0, x1, y } = f.place, L = x1 - x0, debut = f.moments[0].age;
-    const boite = el("div", { class: "frise", role: "group", "aria-label": f.nom, style: `left:${x0}px;top:${y}px;width:${L}px` },
-      el("span", { class: "frise-bout", texte: f.debut }), el("span", { class: "frise-bout droite", texte: f.fin }));
-    // les points : un par moment, ou un pour plusieurs moments confondus (moins de 4 px d'écart)
-    const points = [];
-    for (const m of f.moments) {
-      const x = Math.round(((debut - m.age) / debut) * L * 10) / 10, dernier = points[points.length - 1];
-      if (dernier && x - dernier.x < 4) dernier.moments.push(m);
-      else points.push({ x, moments: [m] });
-    }
-    for (const p of points) {
-      const m = p.moments[0];
-      p.a = el("a", { class: "frise-pt", href: f.page + "#" + m.ancre, style: `left:${p.x}px`, "aria-label": p.moments.map((n) => `${n.nom}, ${n.quand}`).join(" ; ") });
-      p.a.addEventListener("focus", () => this.survolerMoment(p, x0 + p.x, y));
-      p.a.addEventListener("blur", () => this.quitterMoment());
-      boite.append(p.a);
-    }
-    // la souris : le point le plus proche, sur toute la longueur de la frise
-    const proche = (ev) => {
-      const r = boite.getBoundingClientRect(), x = ((ev.clientX - r.left) / r.width) * L;
-      return points.reduce((a, b) => (Math.abs(b.x - x) < Math.abs(a.x - x) ? b : a));
-    };
-    boite.addEventListener("pointermove", (ev) => {
-      const p = proche(ev);
-      if (p !== this.pointVu) this.survolerMoment(p, x0 + p.x, y);
-    });
-    boite.addEventListener("pointerleave", () => this.quitterMoment());
-    boite.addEventListener("click", (ev) => { if (!ev.target.closest(".frise-pt")) location.href = proche(ev).a.href; });
-    this.bulleFrise = el("div", { class: "frise-bulle", hidden: true, role: "status" });
-    // sans carte pour une époque : le globe sans terres, avec un point d'interrogation (demande du 25/11/2026)
-    this.inconnu = el("div", { class: "globe-inconnu", "aria-hidden": "true", texte: "?", style: `left:${this.g.cx}px;top:${this.g.cy}px` });
-    this.couche.append(boite, this.bulleFrise, this.inconnu);
-  }
-
-  survolerMoment(p, x, y) {
-    const f = this.cfg.frise, m = p.moments[0];
-    clearTimeout(this.retour);
-    if (this.pointVu) this.pointVu.a.classList.remove("vu");
-    this.pointVu = p;
-    p.a.classList.add("vu");
-    const lignes = [];
-    for (const n of p.moments) lignes.push(el("b", { texte: n.nom }), el("span", { texte: n.quand[0].toUpperCase() + n.quand.slice(1) }));
-    const carte = m.carte > 0 ? `Estimation notée ${m.note} sur 10 : ${f.source}` : m.carte === 0 ? "" : f.sansCarte;
-    if (carte) lignes.push(el("span", { class: "petit", texte: carte }));
-    this.bulleFrise.replaceChildren(...lignes);
-    this.bulleFrise.style.left = Math.round(borne(x, 180, 1100)) + "px";
-    this.bulleFrise.style.top = y + "px";
-    this.bulleFrise.hidden = false;
-    this.versEpoque(m.carte);
-  }
-
-  quitterMoment() {
-    clearTimeout(this.retour);
-    this.retour = setTimeout(() => {
-      this.bulleFrise.hidden = true;
-      if (this.pointVu) { this.pointVu.a.classList.remove("vu"); this.pointVu = null; }
-      this.versEpoque(0);
-    }, 250);
-  }
-
-  // Le globe passe en fondu aux terres d'une époque (t en millions d'années ; 0 : aujourd'hui ; null : pas de carte,
-  // le globe sans terres et un point d'interrogation). Les cartes se chargent au premier survol. La fin du fondu arrive aussi par la
-  // minuterie, si le navigateur ne dessine plus d'images.
-  versEpoque(t) {
-    this.cible = t;
-    if (t > 0 && !this.couches.some((c) => c.t === t)) {
-      if (!this.chargement) {
-        this.chargement = this.appli.charger("donnees/" + this.cfg.frise.donnees)
-          .then((d) => this.ajouterEpoques(d))
-          .catch((err) => { console.error(err); });
-      }
-      this.chargement.then(() => { if (this.cible === t && this.couches.some((c) => c.t === t) && !this.detruit) this.versEpoque(t); });
-      return;
-    }
-    const pencher = this.cfg.frise.pencher || {};
-    const but = new Map(this.couches.map((c) => [c, t != null && c.t === t ? 1 : 0]));
-    if (this.inconnu) this.inconnu.classList.toggle("vu", t == null);
-    const lat1 = t > 0 && pencher[t] != null ? pencher[t] : this.g.lat;
-    const depart = new Map(this.couches.map((c) => [c, c.op])), lat0 = this.etat.lat;
-    const poser = (k) => {
-      const e = lisse(k);
-      for (const c of this.couches) c.op = depart.get(c) + (but.get(c) - depart.get(c)) * e;
-      this.etat.lat = lat0 + (lat1 - lat0) * e;
-      this.rendre();
-    };
-    cancelAnimationFrame(this.fondu);
-    clearTimeout(this.fonduFin);
-    if (calme()) { poser(1); return; }
-    const t0 = performance.now(), duree = 450;
-    const pas = () => {
-      const k = Math.min(1, (performance.now() - t0) / duree);
-      poser(k);
-      if (k < 1) this.fondu = requestAnimationFrame(pas);
-    };
-    this.fondu = requestAnimationFrame(pas);
-    this.fonduFin = setTimeout(() => { cancelAnimationFrame(this.fondu); poser(1); }, duree + 60);
-  }
-
-  // Les couches des époques passées, une par carte du fichier (une fois pour toutes), sous la lumière et le bord du globe.
-  ajouterEpoques(donnees) {
-    for (const cle of Object.keys(donnees)) {
-      const t = Number(cle);
-      if (this.couches.some((c) => c.t === t)) continue;
-      const p = svg("path", { fill: "#a9b08c", stroke: "#a9b08c", "stroke-width": 1.2, "stroke-linejoin": "round", opacity: 0 });
-      this.carte.insertBefore(p, this.disque[2]);
-      this.couches.push({ t, anneaux: donnees[cle].map((r) => ({ glace: false, v: contour(r, 1, 20, 1.5) })), terre: p, el: p, op: 0 });
-    }
-  }
-
   // Échap : fermer ce qui est ouvert dans le palier. Renvoie vrai si quelque chose a été fermé.
   echap() {
     if (this.fiche) { this.fermerCarte(); return true; }
@@ -733,9 +630,6 @@ export class Globe {
 
   detruire() {
     this.detruit = true;
-    clearTimeout(this.retour);
-    clearTimeout(this.fonduFin);
-    cancelAnimationFrame(this.fondu);
     this.etat.auto = false;
     clearTimeout(this.reprise);
     if (this.touches) removeEventListener("keydown", this.touches);
