@@ -76,10 +76,11 @@ class Accueil {
     // ramène à la planète) ; la liste reste dans la page sans JavaScript, et ?tout garde le bouton pour les essais
     // le lexique est dans le « ? » ; les grandes questions et les modèles restent cachés tant qu'on écrit les fiches une à une
     const pages = this.tout ? ["Les grandes questions", "Les modèles et leurs noms"] : [];
-    S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "left:50%;transform:translateX(-50%)" },
+    // le « ? » dans le coin en haut à droite (demande du 25/11/2026) ; avec ?tout, le bouton de liste passe à gauche
+    S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "right:24px" },
       pages.map((p) => el("button", { texte: p, onclick: (ev) => this.ouvrirPage(p, ev.currentTarget) })),
       this.construireAide()));
-    this.bListe = el("button", { class: "capbtn", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
+    this.bListe = el("button", { class: "capbtn", style: "left:24px;right:auto", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
     S.append(this.bListe);
     this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id }, el("span", { class: "o" }), this.reglages.paliers[id].nom));
     this.bPlus = el("button", { class: "zb", "aria-label": "Zoomer", texte: "+", onclick: () => this.pas(1) });
@@ -133,7 +134,7 @@ class Accueil {
     this.actuel = id;
     this.fermerPanneaux();
     this.majCadre();
-    document.title = id === "planete" ? "Monde · Comment habiter la Terre ?" : "Monde · " + cfg.nom;
+    document.title = id === "planete" ? "Monde" : "Monde · " + cfg.nom;
     let attente = setTimeout(() => { attente = el("p", { class: "chargement", texte: "Chargement…" }); this.scene.append(attente); }, 200);
     let donnees;
     try {
@@ -159,7 +160,6 @@ class Accueil {
     const appli = {
       depart, territoires: this.reglages.territoires, visible: (nom) => this.visibles.has(nom),
       ouvrirSujet: (nom) => this.ouvrirSujet(nom), ouvrirListe: () => this.ouvrirListe(), charger: (c) => charger(c),
-      titre: () => !this.titreVu, titreVu: () => { this.titreVu = true; },
       aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => this.k()
     };
     const ancien = this.objet, ancienne = this.couche;

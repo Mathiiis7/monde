@@ -286,13 +286,9 @@ export class Globe {
           el("span", { class: "pt" }), el("span", { class: "lb", texte: o.nom || o.sujet }));
         C.append(b);
       }
-      // le titre : à l'arrivée seulement ; il s'efface au premier geste ou après 5 s, et ne revient plus de la visite
-      // (demande du 25/11/2026). Il reste lisible par les lecteurs d'écran.
-      if (this.appli.titre && this.appli.titre()) {
-        this.titre = el("div", { class: "titre-scene" }, el("h1", { texte: this.cfg.titre }), this.cfg.sousTitre ? el("p", { texte: this.cfg.sousTitre }) : null);
-        C.append(this.titre);
-        this.titreMinuterie = setTimeout(() => this.cacherTitre(), 5000);
-      } else C.append(el("h1", { class: "cache-ecran", texte: this.cfg.titre }));
+      // pas de titre à l'écran (demande du 25/11/2026 : « Comment habiter la Terre ? » n'apparaît nulle part pour
+      // l'instant, à revoir avec la page d'accueil) ; un titre pour les lecteurs d'écran seulement
+      C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
       if (this.cfg.frise) this.construireFrise();
     } else {
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
@@ -369,7 +365,6 @@ export class Globe {
       if (!d || this.detruit || ev.altKey || ev.ctrlKey || ev.metaKey) return;
       if (ev.target && ev.target.closest && ev.target.closest(".pan, .panneau, .menu-aide, input, textarea")) return;
       ev.preventDefault();
-      this.cacherTitre();
       this.aller(d[0], d[1]);
     };
     addEventListener("keydown", this.touches);
@@ -529,7 +524,6 @@ export class Globe {
       const p = this.appli.point(ev);
       const g = this.vue;
       if (this.enVol || Math.hypot(p.x - g.cx, p.y - g.cy) > g.r + 24) return;
-      this.cacherTitre();
       this.arreter();
       cancelAnimationFrame(this.anim);
       this.glisse = { x: ev.clientX, y: ev.clientY, lon: this.etat.lon, lat: this.etat.lat, k: this.appli.k(), i: this.planete ? null : indice(ev), bouge: false, p };
@@ -615,37 +609,55 @@ export class Globe {
   }
 
   // ---- La frise de l'histoire de la Terre (planète ; choix de Mathis du 25/11/2026, à la place du voyage avec
-  // l'horloge) : une ligne sous le globe, un point par grand moment de la fiche, à intervalles égaux (pas à l'échelle :
-  // les derniers moments seraient collés). Survoler un point donne son nom et, quand une carte existe pour cette époque,
-  // le globe montre où étaient les terres ; un clic ouvre la fiche à ce moment-là. Avant la plus ancienne carte, il n'en
-  // existe pas de fiable : les terres d'aujourd'hui s'estompent.
+  // l'horloge) : une ligne sous le globe, un point par grand moment de la fiche, à l'échelle du temps (demande du même
+  // jour) : les derniers moments sont donc serrés au bout, et ceux qui tombent au même endroit font un seul point.
+  // La souris choisit le moment le plus proche ; le clavier passe d'un point à l'autre. Survoler donne le nom et, quand
+  // une carte existe pour cette époque, le globe montre où étaient les terres ; un clic ouvre la fiche à ce moment-là.
+  // Avant la plus ancienne carte, il n'en existe pas de fiable : les terres d'aujourd'hui s'estompent.
   construireFrise() {
-    const f = this.cfg.frise, n = f.moments.length, { x0, x1, y } = f.place;
-    const boite = el("div", { class: "frise", role: "group", "aria-label": f.nom, style: `left:${x0}px;top:${y}px;width:${x1 - x0}px` },
+    const f = this.cfg.frise, { x0, x1, y } = f.place, L = x1 - x0, debut = f.moments[0].age;
+    const boite = el("div", { class: "frise", role: "group", "aria-label": f.nom, style: `left:${x0}px;top:${y}px;width:${L}px` },
       el("span", { class: "frise-bout", texte: f.debut }), el("span", { class: "frise-bout droite", texte: f.fin }));
-    f.moments.forEach((m, i) => {
-      const x = n > 1 ? Math.round((i / (n - 1)) * (x1 - x0)) : 0;
-      const a = el("a", { class: "frise-pt", href: f.page + "#" + m.ancre, style: `left:${x}px`, "aria-label": `${m.nom}, ${m.quand}` });
-      const montrer = () => this.survolerMoment(m, x0 + x, y);
-      a.addEventListener("pointerenter", montrer);
-      a.addEventListener("focus", montrer);
-      a.addEventListener("pointerleave", () => this.quitterMoment());
-      a.addEventListener("blur", () => this.quitterMoment());
-      boite.append(a);
+    // les points : un par moment, ou un pour plusieurs moments confondus (moins de 4 px d'écart)
+    const points = [];
+    for (const m of f.moments) {
+      const x = Math.round(((debut - m.age) / debut) * L * 10) / 10, dernier = points[points.length - 1];
+      if (dernier && x - dernier.x < 4) dernier.moments.push(m);
+      else points.push({ x, moments: [m] });
+    }
+    for (const p of points) {
+      const m = p.moments[0];
+      p.a = el("a", { class: "frise-pt", href: f.page + "#" + m.ancre, style: `left:${p.x}px`, "aria-label": p.moments.map((n) => `${n.nom}, ${n.quand}`).join(" ; ") });
+      p.a.addEventListener("focus", () => this.survolerMoment(p, x0 + p.x, y));
+      p.a.addEventListener("blur", () => this.quitterMoment());
+      boite.append(p.a);
+    }
+    // la souris : le point le plus proche, sur toute la longueur de la frise
+    const proche = (ev) => {
+      const r = boite.getBoundingClientRect(), x = ((ev.clientX - r.left) / r.width) * L;
+      return points.reduce((a, b) => (Math.abs(b.x - x) < Math.abs(a.x - x) ? b : a));
+    };
+    boite.addEventListener("pointermove", (ev) => {
+      const p = proche(ev);
+      if (p !== this.pointVu) this.survolerMoment(p, x0 + p.x, y);
     });
+    boite.addEventListener("pointerleave", () => this.quitterMoment());
+    boite.addEventListener("click", (ev) => { if (!ev.target.closest(".frise-pt")) location.href = proche(ev).a.href; });
     this.bulleFrise = el("div", { class: "frise-bulle", hidden: true, role: "status" });
     this.couche.append(boite, this.bulleFrise);
   }
 
-  survolerMoment(m, x, y) {
-    const f = this.cfg.frise;
+  survolerMoment(p, x, y) {
+    const f = this.cfg.frise, m = p.moments[0];
     clearTimeout(this.retour);
-    this.cacherTitre();
-    const carte = m.carte > 0
-      ? `Estimation notée ${m.note} sur 10 : ${f.source}`
-      : m.carte === 0 ? "" : f.sansCarte;
-    this.bulleFrise.replaceChildren(el("b", { texte: m.nom }), el("span", { texte: m.quand[0].toUpperCase() + m.quand.slice(1) }),
-      carte ? el("span", { class: "petit", texte: carte }) : null);
+    if (this.pointVu) this.pointVu.a.classList.remove("vu");
+    this.pointVu = p;
+    p.a.classList.add("vu");
+    const lignes = [];
+    for (const n of p.moments) lignes.push(el("b", { texte: n.nom }), el("span", { texte: n.quand[0].toUpperCase() + n.quand.slice(1) }));
+    const carte = m.carte > 0 ? `Estimation notée ${m.note} sur 10 : ${f.source}` : m.carte === 0 ? "" : f.sansCarte;
+    if (carte) lignes.push(el("span", { class: "petit", texte: carte }));
+    this.bulleFrise.replaceChildren(...lignes);
     this.bulleFrise.style.left = Math.round(borne(x, 180, 1100)) + "px";
     this.bulleFrise.style.top = y + "px";
     this.bulleFrise.hidden = false;
@@ -654,7 +666,11 @@ export class Globe {
 
   quitterMoment() {
     clearTimeout(this.retour);
-    this.retour = setTimeout(() => { this.bulleFrise.hidden = true; this.versEpoque(0); }, 250);
+    this.retour = setTimeout(() => {
+      this.bulleFrise.hidden = true;
+      if (this.pointVu) { this.pointVu.a.classList.remove("vu"); this.pointVu = null; }
+      this.versEpoque(0);
+    }, 250);
   }
 
   // Le globe passe en fondu aux terres d'une époque (t en millions d'années ; 0 : aujourd'hui ; null : pas de carte,
@@ -705,13 +721,6 @@ export class Globe {
     }
   }
 
-  cacherTitre() {
-    clearTimeout(this.titreMinuterie);
-    if (!this.titre || this.titre.classList.contains("parti")) return;
-    this.titre.classList.add("parti");
-    if (this.appli.titreVu) this.appli.titreVu();
-  }
-
   // Échap : fermer ce qui est ouvert dans le palier. Renvoie vrai si quelque chose a été fermé.
   echap() {
     if (this.fiche) { this.fermerCarte(); return true; }
@@ -724,8 +733,6 @@ export class Globe {
     clearTimeout(this.retour);
     clearTimeout(this.fonduFin);
     cancelAnimationFrame(this.fondu);
-    clearTimeout(this.titreMinuterie);
-    if (this.titre && this.appli.titreVu) this.appli.titreVu();
     this.etat.auto = false;
     clearTimeout(this.reprise);
     if (this.touches) removeEventListener("keydown", this.touches);
