@@ -25,7 +25,7 @@
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
       "lieux": [],
       "frise": {
-        "_lire": "La frise sous le globe (choix de Mathis, 25/11/2026, à la place du voyage avec l'horloge) : un point par grand moment de la fiche, placé à l'échelle du temps (age, en millions d'années ; des moments à moins de 4 px l'un de l'autre font un seul point) ; survol : le moment le plus proche de la souris ; survol : son nom et, si « carte » est un âge (millions d'années), les terres de cette époque (epoques.json, outils/site/faire-epoques.py ; 0 : aujourd'hui ; null : pas de carte fiable, les terres s'estompent) ; clic : la fiche à son ancre. Heures : l'horloge de 24 heures de la fiche (4 500 millions d'années). Notes des cartes : relevé de la fiche, lignes 34 à 38. pencher : latitude visée pour voir les terres d'une époque.",
+        "_lire": "La frise sous le globe (choix de Mathis, 25/11/2026, à la place du voyage avec l'horloge) : un point par grand moment de la fiche, placé à l'échelle du temps (age, en millions d'années ; des moments à moins de 4 px l'un de l'autre font un seul point) ; survol : le moment le plus proche de la souris ; survol : son nom et, si « carte » est un âge (millions d'années), les terres de cette époque (epoques.json, outils/site/faire-epoques.py ; 0 : aujourd'hui ; null : pas de carte, le globe sans terres avec un point d'interrogation) ; clic : la fiche à son ancre. Heures : l'horloge de 24 heures de la fiche (4 500 millions d'années). Notes des cartes : relevé de la fiche, lignes 34 à 38. pencher : latitude visée pour voir les terres d'une époque.",
         "nom": "L'histoire de la Terre et du vivant",
         "page": "fiches/histoire-terre-vivant.html",
         "donnees": "epoques.json",
@@ -34,7 +34,7 @@
         "fin": "aujourd'hui",
         "pencher": { "539": -30, "475": -30, "390": -20 },
         "source": "les terres d'aujourd'hui replacées là où elles étaient (Merdith et al. 2021, licence CC BY 4.0, simplifié par Monde).",
-        "sansCarte": "Pas de carte fiable des continents à cette époque.",
+        "sansCarte": "Pas de carte des continents de cette époque sur Monde.",
         "moments": [
           {"ancre": "p-1", "age": 4500, "heure": "00 h 00", "quand": "il y a 4,5 milliards d'années", "nom": "La Terre se forme", "carte": null},
           {"ancre": "p-7", "age": 4300, "heure": "01 h 04", "quand": "il y a 4,3 milliards d'années", "nom": "De l'eau liquide, probablement", "carte": null},

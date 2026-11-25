@@ -88,6 +88,8 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .frise-bout.droite { left: auto; right: 0; transform: translateX(12px); }
 .frise-bulle { position: absolute; z-index: 4; width: max-content; max-width: 320px; transform: translate(-50%, calc(-100% - 6px)); display: flex; flex-direction: column; gap: 3px; padding: 10px 13px; border-radius: 10px; background: var(--surface); box-shadow: var(--ombre); font-size: 13px; line-height: 1.4; pointer-events: none; }
 .frise-bulle b { font-size: 14px; }
+.globe-inconnu { position: absolute; transform: translate(-50%, -52%); font: 500 170px/1 var(--titre); color: var(--encre); opacity: 0; transition: opacity .45s; pointer-events: none; }
+.globe-inconnu.vu { opacity: .85; }
 .frise-bulle .petit { color: var(--encre-2); font-size: 12px; }
 
 /* Le haut de l'écran */
@@ -109,6 +111,9 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .st .o { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--encre-2); background: var(--surface); margin-left: 16px; box-sizing: content-box; }
 .st.on { color: var(--encre); font-weight: 700; }
 .st.on .o { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgb(238 240 242 / .18); }
+/* repliée (demande du 25/11/2026) : seulement +, le nom de l'échelle où l'on est, et − ; toute la liste au survol ou au clavier */
+.ech:not(:hover):not(:focus-within) .st:not(.on), .ech:not(:hover):not(:focus-within) .rail::before, .ech:not(:hover):not(:focus-within) .st .o { display: none; }
+.ech:not(:hover):not(:focus-within) .st.on { justify-content: center; padding: 0 4px; }
 
 /* Les étiquettes posées sur la carte */
 .pin { position: absolute; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); text-decoration: none; transform: translate(-8px, -50%); transition: opacity .15s; cursor: pointer; }

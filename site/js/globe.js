@@ -644,7 +644,9 @@ export class Globe {
     boite.addEventListener("pointerleave", () => this.quitterMoment());
     boite.addEventListener("click", (ev) => { if (!ev.target.closest(".frise-pt")) location.href = proche(ev).a.href; });
     this.bulleFrise = el("div", { class: "frise-bulle", hidden: true, role: "status" });
-    this.couche.append(boite, this.bulleFrise);
+    // sans carte pour une époque : le globe sans terres, avec un point d'interrogation (demande du 25/11/2026)
+    this.inconnu = el("div", { class: "globe-inconnu", "aria-hidden": "true", texte: "?", style: `left:${this.g.cx}px;top:${this.g.cy}px` });
+    this.couche.append(boite, this.bulleFrise, this.inconnu);
   }
 
   survolerMoment(p, x, y) {
@@ -674,7 +676,7 @@ export class Globe {
   }
 
   // Le globe passe en fondu aux terres d'une époque (t en millions d'années ; 0 : aujourd'hui ; null : pas de carte,
-  // les terres d'aujourd'hui estompées). Les cartes se chargent au premier survol. La fin du fondu arrive aussi par la
+  // le globe sans terres et un point d'interrogation). Les cartes se chargent au premier survol. La fin du fondu arrive aussi par la
   // minuterie, si le navigateur ne dessine plus d'images.
   versEpoque(t) {
     this.cible = t;
@@ -688,7 +690,8 @@ export class Globe {
       return;
     }
     const pencher = this.cfg.frise.pencher || {};
-    const but = new Map(this.couches.map((c) => [c, t == null ? (c.t === 0 ? 0.18 : 0) : (c.t === t ? 1 : 0)]));
+    const but = new Map(this.couches.map((c) => [c, t != null && c.t === t ? 1 : 0]));
+    if (this.inconnu) this.inconnu.classList.toggle("vu", t == null);
     const lat1 = t > 0 && pencher[t] != null ? pencher[t] : this.g.lat;
     const depart = new Map(this.couches.map((c) => [c, c.op])), lat0 = this.etat.lat;
     const poser = (k) => {
