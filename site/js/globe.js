@@ -79,39 +79,6 @@ function projeter(lon, lat, rp) {
 
 const a = (item, f) => item.f.indexOf(f) >= 0;
 
-// La Lune de la planète, vue depuis la Terre (sa face visible, le nord en haut) : les grandes mers sombres à leur place
-// approximative, quelques cratères clairs (Copernic, Kepler, Aristarque, Tycho et ses rayons), et la même lumière que la
-// Terre, venue d'en haut à gauche (demande du 24/11/2026 : « aucun détail »). Les positions sont en fractions du rayon.
-const LUNE = { cx: 1010, cy: 140, r: 30 };
-const MERS = [ // [x, y, rx, ry, rotation, opacité] : Océan des Tempêtes (en trois morceaux), mers des Pluies, du Froid,
-  // de la Sérénité, de la Tranquillité, des Crises, de la Fécondité, du Nectar, des Nuées, des Humeurs, des Vapeurs
-  [-0.55, -0.1, 0.22, 0.34, 15, 0.55], [-0.45, 0.2, 0.2, 0.25, -10, 0.5], [-0.3, 0.05, 0.16, 0.2, 0, 0.45],
-  [-0.24, -0.38, 0.26, 0.2, -8, 0.75], [-0.1, -0.64, 0.36, 0.06, -6, 0.45], [0.14, -0.36, 0.15, 0.13, 0, 0.8],
-  [0.32, -0.08, 0.19, 0.15, 20, 0.75], [0.66, -0.3, 0.09, 0.11, 0, 0.85], [0.5, 0.18, 0.1, 0.15, -10, 0.6],
-  [0.31, 0.3, 0.07, 0.07, 0, 0.6], [-0.17, 0.38, 0.16, 0.11, 8, 0.5], [-0.5, 0.4, 0.08, 0.08, 0, 0.6], [-0.02, -0.1, 0.09, 0.06, 0, 0.55]
-];
-const CRATERES_CLAIRS = [[-0.33, -0.02, 0.035], [-0.55, -0.03, 0.025], [-0.62, -0.22, 0.025], [-0.12, 0.7, 0.045]];
-const CRATERES = [[0.16, 0.6, 0.055], [0.37, 0.55, 0.04], [-0.36, 0.63, 0.04], [0.56, 0.46, 0.035]];
-function lune(id) {
-  const { cx, cy, r } = LUNE, X = (x) => (cx + x * r).toFixed(1), Y = (y) => (cy + y * r).toFixed(1), R = (v) => (v * r).toFixed(1);
-  const [tx, ty] = [-0.12, 0.7];
-  const rayons = [15, 60, 110, 160, 205, 250, 300, 340].map((d) => {
-    const t = d * D, l = 0.55 + (d % 3) * 0.12;
-    return `<path d="M${X(tx)} ${Y(ty)}L${X(tx + Math.cos(t) * l)} ${Y(ty + Math.sin(t) * l)}"></path>`;
-  }).join("");
-  const g = svg("g", { "aria-hidden": "true" });
-  g.innerHTML =
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}-lune)"></circle>` +
-    `<g clip-path="url(#${id}-lune-c)">` +
-    `<g fill="#555b62" filter="url(#${id}-lune-flou)">${MERS.map(([x, y, rx, ry, o, op]) => `<ellipse cx="${X(x)}" cy="${Y(y)}" rx="${R(rx)}" ry="${R(ry)}" opacity="${op}" transform="rotate(${o} ${X(x)} ${Y(y)})"></ellipse>`).join("")}</g>` +
-    `<g stroke="#e9ebed" stroke-width=".6" stroke-linecap="round" opacity=".2" filter="url(#${id}-lune-flou2)">${rayons}</g>` +
-    `<g filter="url(#${id}-lune-flou2)">${CRATERES.map(([x, y, s]) => `<circle cx="${X(x)}" cy="${Y(y)}" r="${R(s)}" fill="#6f747a" opacity=".55"></circle><circle cx="${X(x + s * 0.35)}" cy="${Y(y + s * 0.35)}" r="${R(s * 0.75)}" fill="#c3c7cb" opacity=".35"></circle>`).join("")}</g>` +
-    `<g fill="#eef0f2" opacity=".85" filter="url(#${id}-lune-flou2)">${CRATERES_CLAIRS.map(([x, y, s]) => `<circle cx="${X(x)}" cy="${Y(y)}" r="${R(s)}"></circle>`).join("")}</g>` +
-    `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id}-lumiere)"></circle>` +
-    `</g>`;
-  return g;
-}
-
 export class Globe {
   constructor(couche, cfg, donnees, appli) {
     this.couche = couche; this.cfg = cfg; this.g = cfg.globe; this.appli = appli;
@@ -257,13 +224,8 @@ export class Globe {
     defs.innerHTML =
       `<radialGradient id="${id}-halo" cx="${cx}" cy="${cy}" r="${halo}" gradientUnits="userSpaceOnUse"><stop offset="${(r / halo).toFixed(3)}" stop-color="#7fb6d9" stop-opacity=".55"></stop><stop offset="${((r + 8) / halo).toFixed(3)}" stop-color="#7fb6d9" stop-opacity=".16"></stop><stop offset="1" stop-color="#7fb6d9" stop-opacity="0"></stop></radialGradient>` +
       `<radialGradient id="${id}-mer" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#356582"></stop><stop offset="60%" stop-color="#26495f"></stop><stop offset="100%" stop-color="#162f40"></stop></radialGradient>` +
-      `<radialGradient id="${id}-lumiere" cx="35%" cy="29%" r="80%"><stop offset="0%" stop-color="#fff" stop-opacity=".19"></stop><stop offset="30%" stop-color="#fff" stop-opacity=".045"></stop><stop offset="60%" stop-color="#000" stop-opacity="0"></stop><stop offset="86%" stop-color="#000" stop-opacity=".2"></stop><stop offset="100%" stop-color="#000" stop-opacity=".5"></stop></radialGradient>` +
-      `<radialGradient id="${id}-lune" cx="40%" cy="36%" r="72%"><stop offset="0%" stop-color="#b6babf"></stop><stop offset="55%" stop-color="#90959b"></stop><stop offset="100%" stop-color="#5f646b"></stop></radialGradient>` +
-      `<clipPath id="${id}-lune-c"><circle cx="${LUNE.cx}" cy="${LUNE.cy}" r="${LUNE.r}"></circle></clipPath>` +
-      `<filter id="${id}-lune-flou" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.1"></feGaussianBlur></filter>` +
-      `<filter id="${id}-lune-flou2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation=".45"></feGaussianBlur></filter>`;
+      `<radialGradient id="${id}-lumiere" cx="35%" cy="29%" r="80%"><stop offset="0%" stop-color="#fff" stop-opacity=".19"></stop><stop offset="30%" stop-color="#fff" stop-opacity=".045"></stop><stop offset="60%" stop-color="#000" stop-opacity="0"></stop><stop offset="86%" stop-color="#000" stop-opacity=".2"></stop><stop offset="100%" stop-color="#000" stop-opacity=".5"></stop></radialGradient>`;
     this.carte.append(defs);
-    if (this.planete) this.carte.append(lune(id));
     // le disque : halo, mer, lumière, bord (majDisque les déplace pendant le vol d'un palier à l'autre)
     this.disque = [
       svg("circle", { cx, cy, r: halo, fill: `url(#${id}-halo)`, "data-marge": 24 }),
