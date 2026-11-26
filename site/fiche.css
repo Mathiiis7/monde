@@ -92,11 +92,6 @@ html.horloge .f-tete h1, html.horloge .f-tete .f-chapeau { position: absolute; w
 html.horloge .f-consigne { text-align: center; margin: 0; }
 .f-quoi { font-family: var(--titre); font-weight: 600; font-size: 25px; line-height: 1.2; margin: 0 0 8px; }
 html.en-panneau .f-quoi { font-size: 22px; }
-.f-message { font-family: var(--titre); font-size: 24px; line-height: 1.3; }
-.f-message em { font-style: normal; color: var(--choix); }
-.f-question { font-family: var(--titre); font-size: 21px; line-height: 1.3; color: var(--encre-2); }
-/* avec l'horloge, « Calcul de Monde » est déjà au-dessus du cadran (Mathis, 25/11/2026) */
-html.horloge .f-etape .f-calcul { display: none; }
 html:not(.horloge) .f-etape { margin-bottom: 28px; }
 
 .f-texte { font-size: 17px; padding-bottom: 80px; }
@@ -106,7 +101,7 @@ html:not(.horloge) .f-etape { margin-bottom: 28px; }
 .f-texte p, .f-texte ul { margin: 0 0 14px; }
 .f-texte ul { padding-left: 22px; }
 .f-chapeau { color: var(--encre-2); font-size: 18px; }
-.f-renvoi, .f-calcul { color: var(--encre-2); }
+.f-renvoi { color: var(--encre-2); }
 .f-phrase { border-radius: 3px; scroll-margin-top: 120px; transition: background .2s; }
 .f-phrase.cible, .f-phrase.actif, .f-phrase.survol { background: rgb(242 215 126 / .14); }
 /* la phrase atteinte depuis la frise : surlignée 3 secondes, puis le surlignage s'efface doucement */

@@ -80,6 +80,9 @@ function projeter(lon, lat, rp) {
 const a = (item, f) => item.f.indexOf(f) >= 0;
 const lisse = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
 
+// Les deux os seuls, sans le rond : sur le globe (ICONES.os) et sur la couverture du livre, premier écran (livre.js).
+export const OS = '<line x1="8.20" y1="17.00" x2="18.00" y2="12.60" stroke="#f6d99a" stroke-width="1.90" stroke-linecap="round"></line><circle cx="8.32" cy="18.13" r="1.50" fill="#f6d99a"></circle><circle cx="7.44" cy="16.16" r="1.50" fill="#f6d99a"></circle><circle cx="8.66" cy="16.80" r="0.93" fill="#ddb877"></circle><circle cx="18.76" cy="13.44" r="1.50" fill="#f6d99a"></circle><circle cx="17.88" cy="11.47" r="1.50" fill="#f6d99a"></circle><circle cx="17.54" cy="12.80" r="0.93" fill="#ddb877"></circle><line x1="16.90" y1="7.40" x2="14.60" y2="20.40" stroke="#f6d99a" stroke-width="1.90" stroke-linecap="round"></line><circle cx="15.90" cy="6.87" r="1.50" fill="#f6d99a"></circle><circle cx="18.02" cy="7.24" r="1.50" fill="#f6d99a"></circle><circle cx="16.81" cy="7.89" r="0.93" fill="#ddb877"></circle><circle cx="13.48" cy="20.56" r="1.50" fill="#f6d99a"></circle><circle cx="15.60" cy="20.93" r="1.50" fill="#f6d99a"></circle><circle cx="14.69" cy="19.91" r="0.93" fill="#ddb877"></circle>';
+
 // Les icônes posées sur le globe. Le fossile (demandes du 25/11/2026) : une coquille enroulée avec ses côtes, comme celle
 // des ammonites, au trait blanc dans un rond marron foncé au contour plus foncé encore (Mathis, 25/11/2026, après
 // des essais d'os et d'image sans rond), centrée ; dessinée pour Monde (spirale calculée, outils/maquette/os/).
@@ -89,8 +92,7 @@ const ICONES = {
   // d'après l'idée d'une image qu'il a envoyée (outils/maquette/os/humain.html). La coquille, ci-dessous, reste en réserve.
   os: () => {
     const s = svg("svg", { class: "ic", viewBox: "0 0 28 28", width: 32, height: 32, "aria-hidden": "true" });
-    s.innerHTML = '<circle cx="14" cy="14" r="12.5" fill="#5c412c" stroke="#3d2a1d" stroke-width="1.5"></circle>' +
-      '<line x1="8.20" y1="17.00" x2="18.00" y2="12.60" stroke="#f6d99a" stroke-width="1.90" stroke-linecap="round"></line><circle cx="8.32" cy="18.13" r="1.50" fill="#f6d99a"></circle><circle cx="7.44" cy="16.16" r="1.50" fill="#f6d99a"></circle><circle cx="8.66" cy="16.80" r="0.93" fill="#ddb877"></circle><circle cx="18.76" cy="13.44" r="1.50" fill="#f6d99a"></circle><circle cx="17.88" cy="11.47" r="1.50" fill="#f6d99a"></circle><circle cx="17.54" cy="12.80" r="0.93" fill="#ddb877"></circle><line x1="16.90" y1="7.40" x2="14.60" y2="20.40" stroke="#f6d99a" stroke-width="1.90" stroke-linecap="round"></line><circle cx="15.90" cy="6.87" r="1.50" fill="#f6d99a"></circle><circle cx="18.02" cy="7.24" r="1.50" fill="#f6d99a"></circle><circle cx="16.81" cy="7.89" r="0.93" fill="#ddb877"></circle><circle cx="13.48" cy="20.56" r="1.50" fill="#f6d99a"></circle><circle cx="15.60" cy="20.93" r="1.50" fill="#f6d99a"></circle><circle cx="14.69" cy="19.91" r="0.93" fill="#ddb877"></circle>';
+    s.innerHTML = '<circle cx="14" cy="14" r="12.5" fill="#5c412c" stroke="#3d2a1d" stroke-width="1.5"></circle>' + OS;
     return s;
   },
   coquille: () => {
@@ -311,9 +313,10 @@ export class Globe {
           el("span", { class: "pt" }), el("span", { class: "lb", texte: o.nom || o.sujet }));
         C.append(b);
       }
-      // pas de titre à l'écran (demande du 25/11/2026 : « Comment habiter la Terre ? » n'apparaît nulle part pour
-      // l'instant, à revoir avec la page d'accueil) ; un titre pour les lecteurs d'écran seulement
+      // un titre pour les lecteurs d'écran ; à l'écran, la question de Monde sous la Terre, toujours là, sans animation
+      // (26/11/2026 : « c'est quand même une question importante » ; elle était à la fin de la fiche)
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
+      if (this.cfg.question) C.append(el("div", { class: "titre-scene" }, el("p", { class: "question", texte: this.cfg.question })));
     } else {
       C.append(el("h1", { class: "cache-ecran", texte: "Monde : " + this.cfg.nom.toLowerCase() }));
       this.boites();

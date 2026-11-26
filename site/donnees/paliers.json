@@ -1,6 +1,6 @@
 {
-  "_lire": "Réglages des 6 paliers de l'accueil (8 dans la maquette : la région et le département sont devenus des contours de la France le 24/11/2026), repris de la maquette (toile « Monde, maquette », 19-23/11/2026). Les listes de sujets sont dans index.html ; ici, chaque nom de sujet doit y figurer (outils/site/verifier-sujets.py). Coordonnées en pixels de la scène de 1280 x 800 ; globe : centre (cx, cy), rayon r, point visé (lon, lat), pas des flèches [est-ouest, nord-sud] en degrés.",
-  "ordre": ["planete", "monde", "europe", "france", "ville", "maison"],
+  "_lire": "Réglages des paliers de l'accueil : le livre (premier écran depuis le 25/11/2026), puis les 6 paliers de la carte (8 dans la maquette : la région et le département sont devenus des contours de la France le 24/11/2026), repris de la maquette (toile « Monde, maquette », 19-23/11/2026). Les listes de sujets sont dans index.html ; ici, chaque nom de sujet doit y figurer (outils/site/verifier-sujets.py). Coordonnées en pixels de la scène de 1280 x 800 ; globe : centre (cx, cy), rayon r, point visé (lon, lat), pas des flèches [est-ouest, nord-sud] en degrés.",
+  "ordre": ["histoire", "planete", "monde", "europe", "france", "ville", "maison"],
   "territoires": [
     ["Guadeloupe", -61.55, 16.2], ["Martinique", -61.02, 14.64], ["Guyane", -53.1, 3.95],
     ["La Réunion", 55.53, -21.12], ["Mayotte", 45.15, -12.82], ["Saint-Pierre-et-Miquelon", -56.27, 46.95],
@@ -8,10 +8,18 @@
     ["Polynésie française", -149.43, -17.65], ["Nouvelle-Calédonie", 165.6, -21.3], ["Terres australes", 69.35, -49.35]
   ],
   "paliers": {
+    "histoire": {
+      "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
+      "nom": "L'histoire", "echelle": "de l'histoire", "type": "livre",
+      "sujet": "L'histoire de la Terre et du vivant",
+      "usure": 1, "tirage": 46
+    },
     "planete": {
       "nom": "La Terre", "echelle": "de la Terre", "type": "terres", "donnees": "terres.json",
-      "globe": { "cx": 640, "cy": 400, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
+      "globe": { "cx": 640, "cy": 375, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
       "aria": "La Terre vue de l'espace, sans frontières. Glisse pour la faire tourner.",
+      "_question": "Sous la Terre, la question de Monde (26/11/2026 ; elle était à la fin de la fiche « L'histoire de la Terre et du vivant »).",
+      "question": "Comment habitons-nous la Terre, et comment l'habiter demain ?",
       "orbite": [
         { "sujet": "Ce qui rend la Terre habitable", "droite": 440, "y": 170 },
         { "sujet": "Les grands cycles", "droite": 392, "y": 290 },
@@ -23,8 +31,8 @@
         { "sujet": "Le changement climatique", "gauche": 868, "y": 560 }
       ],
       "_lieux": "La planète ne parle pas de territoire (demande du 24/11/2026) : la mer, l'Antarctique et la Lune (« Mers, pôles et espace ») sont au palier des États.",
-      "_fossile": "La coquille fossile dessinée qui ouvre « L'histoire de la Terre et du vivant » (choix de Mathis, 25/11/2026) : posé à Jebel Irhoud (Maroc), où ont été trouvés les plus anciens fossiles connus attribués à Homo sapiens ; relevé de la fiche, lignes 30 et 41.",
-      "lieux": [ { "sujet": "L'histoire de la Terre et du vivant", "nom": "L'histoire de la Terre et du vivant", "lon": -8.8725, "lat": 31.855, "icone": "os" } ]
+      "_fossile": "Les os posés à Jebel Irhoud (Maroc) qui ouvraient « L'histoire de la Terre et du vivant » sont retirés le 26/11/2026 : la fiche s'ouvre depuis le livre, premier écran. Pour les remettre : { \"sujet\": \"L'histoire de la Terre et du vivant\", \"nom\": \"L'histoire de la Terre et du vivant\", \"lon\": -8.8725, \"lat\": 31.855, \"icone\": \"os\" } dans « lieux ».",
+      "lieux": []
     },
     "monde": {
       "nom": "Les États", "echelle": "des États", "type": "pays", "donnees": "monde.json",

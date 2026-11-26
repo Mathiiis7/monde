@@ -76,6 +76,8 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .titre-scene { position: absolute; left: 0; right: 0; bottom: 32px; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
 .titre-scene h1 { margin: 0; font-family: var(--titre); font-size: 52px; line-height: 1; font-weight: 500; letter-spacing: -0.01em; }
 .titre-scene p { margin: 0; font-size: 14px; color: var(--encre-2); }
+/* la question de Monde sous la Terre (26/11/2026), sur deux lignes équilibrées */
+.titre-scene p.question { max-width: 620px; font-family: var(--titre); font-size: 34px; line-height: 1.2; font-weight: 500; color: var(--encre); text-align: center; text-wrap: balance; }
 /* Un sujet porté par une icône sur le globe (la coquille fossile dans son rond) : centrée sur le lieu ; son nom n'apparaît qu'au
    survol ou au clavier */
 .pin.icone { gap: 6px; transform: translate(-16px, -50%); }
@@ -92,6 +94,33 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .lecteur .fermer { top: 12px; right: 23px; width: 28px; height: 28px; z-index: 1; background: var(--releve); border-radius: 8px; box-shadow: var(--ombre); color: var(--encre); }
 .lecteur .fermer svg { width: 13px; height: 13px; }
 @media (prefers-reduced-motion: reduce) { .lecteur { transition: none; } }
+
+/* Le livre, premier écran (livre.js) : un vieux livre légèrement usé (26/11/2026 ; maquette
+   outils/maquette/livre/vieux.html), dessiné en SVG par dessin-livre.js ; la couverture s'ouvre vers la gauche, de fausses
+   lignes sur les pages ; ouvert, il se range à gauche du panneau (transform posé par livre.js) */
+.scene-livre { position: absolute; inset: 0; display: grid; place-items: center; }
+.livre { position: relative; width: 300px; height: 400px; perspective: 1800px; cursor: pointer; transform-origin: left center; transition: transform .6s cubic-bezier(.45,0,.25,1); }
+.livre:focus-visible { outline: 2px solid var(--choix); outline-offset: 8px; border-radius: 6px; }
+.livre svg.dessin { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* le bloc des pages, un peu plus grand que la couverture à droite et en bas : l'épaisseur du livre */
+.livre .feuille { position: absolute; left: 6px; top: 5px; width: 301px; height: 401px; z-index: 0; }
+.livre .couv { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.45,0,.25,1); }
+/* tout est dessiné sur la face et l'intérieur (rien sur la couverture elle-même) : sinon le navigateur hésite entre deux
+   couches au même endroit ; pas de décalage en profondeur, qui grossit la face d'un rien et rend les os flous */
+.livre .face { position: absolute; inset: 0; backface-visibility: hidden; }
+.livre .dedans { position: absolute; inset: 0; z-index: 0; backface-visibility: hidden; transform: rotateY(180deg); }
+.livre .cadre { position: absolute; inset: 20px 18px 20px 47px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px; }
+.livre .titre { font-family: var(--titre); font-weight: 600; font-size: 30px; line-height: 1.15; color: #ecd09a; padding: 0 14px; text-shadow: 0 1px 0 rgb(0 0 0 / .55), 0 -1px 0 rgb(255 255 255 / .08); }
+.livre .os { width: 64px; height: 64px; filter: drop-shadow(0 1px 0 rgb(0 0 0 / .5)); }
+/* les fausses lignes (26/11/2026) : des traits arrondis, paragraphes finis par une ligne plus courte */
+.livre .lignes { position: absolute; display: flex; flex-direction: column; gap: 11px; z-index: 1; }
+.livre .feuille .lignes { inset: 48px 38px 44px 32px; }
+.livre .dedans .lignes { inset: 48px 32px 44px 38px; }
+.livre .lignes i { display: block; height: 5px; border-radius: 3px; background: rgb(70 48 28 / .22); }
+.livre .lignes b { display: block; height: 7px; }
+/* rien ne bouge au survol (26/11/2026) : seule la main du pointeur dit qu'on peut cliquer */
+.livre.ouvert .couv { transform: rotateY(-172deg); }
+@media (prefers-reduced-motion: reduce) { .livre, .livre .couv { transition: none; } }
 
 /* Le haut de l'écran */
 .cap { position: absolute; top: 18px; width: max-content; display: flex; gap: 2px; align-items: center; padding: 5px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 5; }
@@ -112,9 +141,10 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .st .o { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--encre-2); background: var(--surface); margin-left: 16px; box-sizing: content-box; }
 .st.on { color: var(--encre); font-weight: 700; }
 .st.on .o { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px rgb(238 240 242 / .18); }
-/* repliée (demande du 25/11/2026) : seulement +, le nom de l'échelle où l'on est, et − ; toute la liste au survol ou au clavier */
-.ech:not(:hover):not(:focus-within) .st:not(.on), .ech:not(:hover):not(:focus-within) .rail::before, .ech:not(:hover):not(:focus-within) .st .o { display: none; }
-.ech:not(:hover):not(:focus-within) .st.on { justify-content: center; padding: 0 4px; }
+/* repliée (demande du 25/11/2026) : seulement +, le nom de l'échelle où l'on est, et − ; toute la liste seulement au clic sur
+   ce nom (26/11/2026 : dépliée au survol, elle déplaçait + et − sous la souris) ; accueil.js, deplier() */
+.ech:not(.deplie) .st:not(.on), .ech:not(.deplie) .rail::before, .ech:not(.deplie) .st .o { display: none; }
+.ech:not(.deplie) .st.on { justify-content: center; padding: 0 4px; }
 
 /* Les étiquettes posées sur la carte */
 .pin { position: absolute; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--encre); text-decoration: none; transform: translate(-8px, -50%); transition: opacity .15s; cursor: pointer; }

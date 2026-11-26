@@ -1,8 +1,10 @@
 // L'accueil de Monde : une carte de la Terre qu'on zoome, en six paliers, de la planète à la maison (choix du
-// 19/11/2026). Ce fichier tient la scène, la réglette des échelles, le passage d'un palier à l'autre et les panneaux.
+// 19/11/2026), précédée d'un livre, « L'histoire de la Terre et du vivant », premier écran (choix du 25/11/2026).
+// Ce fichier tient la scène, la réglette des échelles, le passage d'un palier à l'autre et les panneaux.
 // Les sujets de chaque palier sont lus dans index.html ; les réglages des paliers dans site/donnees/paliers.json.
 import { Globe } from "./globe.js";
 import { Plan } from "./plan.js";
+import { Livre } from "./livre.js";
 import { el, boutonFermer, calme } from "./outils.js";
 
 const BASE = new URL("../", import.meta.url);
@@ -85,11 +87,26 @@ class Accueil {
       this.construireAide()));
     this.bListe = el("button", { class: "capbtn", style: "left:24px;right:auto", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
     S.append(this.bListe);
-    this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id }, el("span", { class: "o" }), this.reglages.paliers[id].nom));
+    // repliée, la réglette ne montre que le nom du palier : un clic dessus la déplie (pas le survol, qui déplaçait + et −
+    // sous la souris, 26/11/2026) ; dépliée, un clic sur un palier y mène et la replie
+    this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id, onclick: (ev) => {
+      if (this.ech.classList.contains("deplie")) { this.deplier(false); return; }
+      ev.preventDefault();
+      this.deplier(true);
+    } }, el("span", { class: "o" }), this.reglages.paliers[id].nom));
     this.bPlus = el("button", { class: "zb", "aria-label": "Zoomer", texte: "+", onclick: () => this.pas(1) });
     this.bMoins = el("button", { class: "zb", "aria-label": "Dézoomer", texte: "−", onclick: () => this.pas(-1) });
     this.ech = el("nav", { class: "ech", "aria-label": "Échelle de la carte" }, this.bPlus, el("div", { class: "rail" }, this.rail), this.bMoins);
     S.append(this.ech);
+    addEventListener("pointerdown", (ev) => { if (!ev.target.closest(".ech")) this.deplier(false); });
+  }
+
+  // La réglette dépliée (tous les paliers) ou repliée (le palier où l'on est). Renvoie vrai si quelque chose a changé.
+  deplier(ouvrir) {
+    if (this.ech.classList.contains("deplie") === ouvrir) return false;
+    this.ech.classList.toggle("deplie", ouvrir);
+    this.rail.forEach((a) => { if (a.classList.contains("on")) a.setAttribute("aria-expanded", String(ouvrir)); });
+    return true;
   }
 
   // « ? » au bout de la barre du haut : un petit menu vers le lexique et les deux pages sur le site lui-même, « Comment
@@ -117,10 +134,11 @@ class Accueil {
     if (i >= 0 && i < this.ordre.length) this.aller(this.ordre[i]);
   }
 
-  // Le palier vient de l'adresse (#planete, #monde…) : le bouton « retour » du navigateur remonte d'un palier.
+  // Le palier vient de l'adresse (#histoire, #planete…) : le bouton « retour » du navigateur remonte d'un palier ; sans
+  // adresse, le premier palier (le livre).
   suivreAdresse() {
     const h = decodeURIComponent(location.hash.slice(1));
-    const id = this.ordre.includes(h) ? h : "planete";
+    const id = this.ordre.includes(h) ? h : this.ordre[0];
     const depart = this.depart;
     this.depart = null;
     if (id !== this.actuel) this.montrer(id, depart);
@@ -139,11 +157,12 @@ class Accueil {
     this.fermerPanneaux();
     if (this.lecteur) { this.lecteur.remove(); this.lecteur = null; }
     this.majCadre();
-    document.title = id === "planete" ? "Monde" : "Monde · " + cfg.nom;
+    document.title = id === this.ordre[0] ? "Monde" : "Monde · " + cfg.nom;
     let attente = setTimeout(() => { attente = el("p", { class: "chargement", texte: "Chargement…" }); this.scene.append(attente); }, 200);
     let donnees;
     try {
-      donnees = cfg.type === "plan"
+      donnees = cfg.type === "livre" ? {}                              // le livre n'a rien à charger
+        : cfg.type === "plan"
         ? { dessin: await charger("dessins/" + cfg.dessin, true), lieux: await charger("donnees/" + cfg.lieux) }
         : await charger("donnees/" + cfg.donnees);
       if (cfg.decoupage) {
@@ -169,10 +188,11 @@ class Accueil {
     };
     const ancien = this.objet, ancienne = this.couche;
     // d'un globe à un globe : le nouveau part de l'image exacte de l'ancien et vole jusqu'à la sienne (un vrai zoom)
-    const vol = cfg.type !== "plan" && !!ancien && !!ancien.etatVue && !calme();
+    const Classe = { plan: Plan, livre: Livre }[cfg.type] || Globe;
+    const vol = Classe === Globe && !!ancien && !!ancien.etatVue && !calme();
     appli.depuis = vol ? ancien.etatVue() : null;
     const [cfgVu, donneesVues] = this.filtrer(id, cfg, donnees);
-    const objet = new (cfg.type === "plan" ? Plan : Globe)(couche, cfgVu, donneesVues, appli);
+    const objet = new Classe(couche, cfgVu, donneesVues, appli);
     this.objet = objet; this.couche = couche;
     this.transition(ancienne, ancien, couche, this.ordre.indexOf(id) > this.ordre.indexOf(avant), vol);
   }
@@ -238,9 +258,11 @@ class Accueil {
 
   majCadre() {
     const i = this.ordre.indexOf(this.actuel);
+    this.ech.classList.remove("deplie");                              // un nouveau palier replie la réglette
     this.rail.forEach((a, k) => {
       a.className = "st" + (k === i ? " on" : "");
-      if (k === i) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+      if (k === i) { a.setAttribute("aria-current", "true"); a.setAttribute("aria-expanded", "false"); }
+      else { a.removeAttribute("aria-current"); a.removeAttribute("aria-expanded"); }
     });
     this.bMoins.disabled = i === 0;
     this.bPlus.disabled = i === this.ordre.length - 1;
@@ -266,7 +288,7 @@ class Accueil {
   ouvrirSujet(nom, depuisListe = false) {
     const page = this.pages[nom];
     if (page) {
-      // sur un globe : la fiche dans le panneau de droite, la Terre glisse à gauche ; ailleurs : sa page
+      // sur un globe ou le livre : la fiche dans le panneau de droite, la Terre ou le livre glisse à gauche ; ailleurs : sa page
       if (this.objet && this.objet.glisserVers) this.ouvrirLecteur(page);
       else location.href = page;
       return;
@@ -312,7 +334,9 @@ class Accueil {
     if (!this.lecteur) return false;
     this.lecteur.remove();
     this.lecteur = null;
-    if (this.objet && this.objet.glisserVers) this.objet.glisserVers(this.objet.g.cx);
+    // le livre se referme ; la Terre revient au centre
+    if (this.objet && this.objet.lecteurFerme) this.objet.lecteurFerme();
+    else if (this.objet && this.objet.glisserVers) this.objet.glisserVers(this.objet.g.cx);
     return true;
   }
 
@@ -341,6 +365,7 @@ class Accueil {
 
   echap() {
     if (!this.menuAide.hidden) { this.basculerAide(false); this.bAide.focus(); return; }
+    if (this.deplier(false)) return;
     if (this.fermerLecteur()) return;
     if (this.fermerPanneaux()) return;
     if (this.objet && this.objet.echap) this.objet.echap();
