@@ -109,16 +109,9 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .partie .corps { display: flex; gap: 16px; align-items: flex-end; margin-top: auto; }
 .partie.ecrite .compte { color: var(--encre); }
 .partie .compte span { display: block; font-size: 15.5px; line-height: 1.35; margin-bottom: 6px; }
-/* le vieux livre en petit : le dessin de 300 x 400 réduit, la frise seule au milieu */
-.petit-livre { flex: none; position: relative; width: 81px; height: 108px; filter: drop-shadow(0 6px 10px rgb(0 0 0 / .35)); transition: transform .2s; }
-.petit-livre .tout { position: absolute; left: 0; top: 0; width: 300px; height: 400px; transform: scale(.27); transform-origin: 0 0; }
-.petit-livre svg.dessin { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.petit-livre .cadre { position: absolute; inset: 20px 18px 20px 47px; display: flex; align-items: center; justify-content: center; }
+/* le vieux livre en petit : une image du dessin de 300 x 400, réduite en lissant (sommaire.js) */
+.petit-livre { flex: none; display: block; width: 81px; height: 108px; filter: drop-shadow(0 6px 10px rgb(0 0 0 / .35)); transition: transform .2s; }
 .partie.ecrite:hover .petit-livre { transform: translateY(-3px); }
-.partie.carte { justify-content: space-between; }
-.partie.carte h2 { color: var(--encre); }
-.partie .boule { align-self: flex-end; width: 92px; height: 92px; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #3b6584, #23405a 60%, #1a3044); box-shadow: 0 0 0 1px #45627a; }
-.partie.carte p { margin: 0; font-size: 14px; color: var(--encre-2); line-height: 1.4; }
 @media (prefers-reduced-motion: reduce) { .partie, .petit-livre { transition: none; } }
 
 /* Le livre, premier écran (livre.js) : un vieux livre légèrement usé (26/11/2026 ; maquette
