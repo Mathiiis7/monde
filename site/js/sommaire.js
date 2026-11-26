@@ -24,7 +24,10 @@ export class Sommaire {
         : (sujets === 1 ? "1 sujet" : sujets + " sujets") + ", aucune fiche";
       return el("a", { class: "partie" + (fiches.length ? " ecrite" : " vide"), href: "#" + id, "data-vers": id, "aria-label": p.nom + " : " + compte },
         el("h2", { texte: p.nom }),
-        fiches.length && p.type === "livre" ? el("div", { class: "image" }, petitLivre(p, appli)) : null,
+        // chaque case a l'image de sa partie (Mathis, 26/11/2026) : le petit livre, ou le palier en petit
+        // (site/dessins/sommaire/, fabriqués par outils/site/faire-vignettes.mjs)
+        el("div", { class: "image" }, p.type === "livre" ? petitLivre(p, appli)
+          : el("img", { src: `site/dessins/sommaire/${id}.svg`, alt: "", "aria-hidden": "true" })),
         el("p", { class: "compte", texte: compte }));
     });
     couche.append(el("div", { class: "sommaire-ecran" },

@@ -1,6 +1,8 @@
 // Le globe des paliers « La planète » à « Le département » : la Terre vue de loin (projection orthographique),
 // dessinée en SVG et recalculée à chaque mouvement. Seul le globe garde à la fois les vraies surfaces et les vraies formes.
 // Repris des planches de la maquette (L-globe, M-globe et leurs dérivées Europe, France, région, département).
+// Sauf « Les États », à plat depuis le 26/11/2026 (demande de Mathis, « une carte à plat comme France et Europe ») :
+// la projection Equal Earth, qui garde les vraies surfaces (les formes s'étirent vers les bords) ; voir aPlat().
 import { el, svg, boutonFermer, borne, calme } from "./outils.js";
 
 const D = Math.PI / 180;
@@ -17,6 +19,14 @@ function repere(lon, lat) {
 // Un contour : [lon, lat, puis les écarts] en 1/u de degré, à partir de la case `debut`. On ajoute des points tous les
 // `pas` degrés pour que les longs côtés suivent la courbure du globe. Renvoie les points sur la sphère, en 3D.
 function contour(r, debut, u, pas) {
+  const pts = points(r, debut, u, pas), v = new Float64Array(pts.length * 3);
+  for (let i = 0; i < pts.length; i++) {
+    const l = pts[i][0] * D, p = pts[i][1] * D, c = Math.cos(p);
+    v[3 * i] = c * Math.cos(l); v[3 * i + 1] = c * Math.sin(l); v[3 * i + 2] = Math.sin(p);
+  }
+  return v;
+}
+function points(r, debut, u, pas) {
   let x = r[debut], y = r[debut + 1];
   const ll = [[x / u, y / u]];
   for (let i = debut + 2; i < r.length; i += 2) { x += r[i]; y += r[i + 1]; ll.push([x / u, y / u]); }
@@ -28,12 +38,38 @@ function contour(r, debut, u, pas) {
     const n = Math.ceil(Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) / pas);
     for (let k = 1; k < n; k++) pts.push([a[0] + (b[0] - a[0]) * k / n, a[1] + (b[1] - a[1]) * k / n]);
   }
-  const v = new Float64Array(pts.length * 3);
-  for (let i = 0; i < pts.length; i++) {
-    const l = pts[i][0] * D, p = pts[i][1] * D, c = Math.cos(p);
-    v[3 * i] = c * Math.cos(l); v[3 * i + 1] = c * Math.sin(l); v[3 * i + 2] = Math.sin(p);
-  }
+  return pts;
+}
+
+// ---- La carte à plat : la projection Equal Earth (Šavrič, Patterson et Jenny, 2018 ; formules et constantes de
+// d3-geo, geoEqualEarth). Méridien central 0°, là où Natural Earth coupe ses contours : aucun pays n'y est coupé en deux.
+// Renvoie x de -2,7066 à 2,7066 et y de -1,3173 à 1,3173 (à multiplier par l'échelle, vue.r).
+const EE = { A1: 1.340264, A2: -0.081106, A3: 0.000893, A4: 0.003796, M: Math.sqrt(3) / 2 };
+export const LARGEUR_PLAT = 2.7066;
+export function aPlat(lon, lat) {
+  const l = Math.asin(EE.M * Math.sin(lat * D)), l2 = l * l, l6 = l2 * l2 * l2;
+  return {
+    x: lon * D * Math.cos(l) / (EE.M * (EE.A1 + 3 * EE.A2 * l2 + l6 * (7 * EE.A3 + 9 * EE.A4 * l2))),
+    y: l * (EE.A1 + EE.A2 * l2 + l6 * (EE.A3 + EE.A4 * l2))
+  };
+}
+// un contour projeté une fois pour toutes (la carte ne tourne pas) : [x, y, x, y…]
+function contourPlat(r, debut, u, pas) {
+  const pts = points(r, debut, u, pas), v = new Float64Array(pts.length * 2);
+  pts.forEach(([lon, lat], i) => { const p = aPlat(lon, lat); v[2 * i] = p.x; v[2 * i + 1] = p.y; });
   return v;
+}
+function tracePlat(v, g) {
+  let s = "";
+  for (let k = 0; k < v.length; k += 2) s += (k ? "L" : "M") + Math.round((g.cx + g.r * v[k]) * 10) / 10 + " " + Math.round((g.cy - g.r * v[k + 1]) * 10) / 10;
+  return s + "Z";
+}
+// le bord de la carte : les méridiens -180° et 180°, d'un pôle à l'autre
+export function bordPlat(g) {
+  const pts = [];
+  for (let lat = -90; lat <= 90; lat += 2) pts.push(aPlat(180, lat));
+  for (let lat = 90; lat >= -90; lat -= 2) pts.push(aPlat(-180, lat));
+  return pts.map((p, i) => (i ? "L" : "M") + Math.round((g.cx + g.r * p.x) * 10) / 10 + " " + Math.round((g.cy - g.r * p.y) * 10) / 10).join("") + "Z";
 }
 
 // Le tracé SVG d'un contour vu depuis (lon, lat). Un point caché derrière est ramené sur le bord du globe.
@@ -107,6 +143,8 @@ export class Globe {
   constructor(couche, cfg, donnees, appli) {
     this.couche = couche; this.cfg = cfg; this.g = cfg.globe; this.appli = appli;
     this.planete = cfg.type === "terres";
+    this.plat = !!cfg.plat;                          // une carte à plat (Les États) : rien ne tourne, vue.r est l'échelle
+    this.etire = this.plat ? LARGEUR_PLAT : 1;       // la demi-largeur de la carte, en vue.r (pour placeLecteur)
     const dep = appli.depart || {};
     this.etat = {
       lon: dep.lon ?? this.g.lon, lat: dep.lat ?? this.g.lat,
@@ -118,7 +156,7 @@ export class Globe {
     this.id = "g" + Math.random().toString(36).slice(2, 8);
     this.preparer(donnees);
     this.construire();
-    if (appli.depuis && !calme()) this.voler(appli.depuis);
+    if (appli.depuis && !calme() && !this.plat) this.voler(appli.depuis);
     else {
       this.rendre();                                 // le premier dessin tout de suite, sans attendre l'image suivante
       if (this.etat.auto) this.lancer();
@@ -126,7 +164,9 @@ export class Globe {
   }
 
   // Le point de vue actuel, pour que le palier suivant parte d'exactement la même image.
+  // (une carte à plat n'en donne pas : on y plonge et on en sort comme vers la ville)
   etatVue() {
+    if (this.plat) return null;
     return { lon: this.etat.lon, lat: this.etat.lat, ...this.vue };
   }
 
@@ -177,6 +217,7 @@ export class Globe {
 
   // Le disque du globe (halo, mer, lumière, bord) suit le point de vue.
   majDisque() {
+    if (this.plat) { const d = bordPlat(this.vue); for (const p of this.disque) p.setAttribute("d", d); return; }
     const { cx, cy, r } = this.vue, halo = r + 24;
     for (const c of this.disque) {
       c.setAttribute("cx", cx); c.setAttribute("cy", cy);
@@ -194,8 +235,8 @@ export class Globe {
       this.lieux = this.cfg.lieux.map((l) => ({ ...l }));
       return;
     }
-    const u = donnees.u || 20;
-    this.items = donnees.pays.map((p, i) => ({ i, code: p[0], nom: p[1], f: p[2], anneaux: p[4].map((r) => contour(r, 0, u, 1)) }));
+    const u = donnees.u || 20, faire = this.plat ? contourPlat : contour;
+    this.items = donnees.pays.map((p, i) => ({ i, code: p[0], nom: p[1], f: p[2], anneaux: p[4].map((r) => faire(r, 0, u, 1)) }));
     // Les étiquettes posées sur le globe : les lieux du palier, Paris, les outre-mer, le nom des régions ou des départements.
     const lieux = (this.cfg.lieux || []).map((l) => ({ ...l, sorte: "sujet" }));
     // Paris porte le mot « Capitale », comme les exemples portent « Région » et « Département » (demande du 24/11/2026)
@@ -242,21 +283,29 @@ export class Globe {
   construire() {
     const { cx, cy, r } = this.g, id = this.id, C = this.couche;
     const halo = r + 24;
-    this.carte = svg("svg", { class: "carte glisse", viewBox: "0 0 1280 800", role: "img", "aria-label": this.cfg.aria });
+    this.carte = svg("svg", { class: "carte" + (this.plat ? "" : " glisse"), viewBox: "0 0 1280 800", role: "img", "aria-label": this.cfg.aria });
     const defs = svg("defs");
     defs.innerHTML =
       `<radialGradient id="${id}-halo" cx="${cx}" cy="${cy}" r="${halo}" gradientUnits="userSpaceOnUse"><stop offset="${(r / halo).toFixed(3)}" stop-color="#7fb6d9" stop-opacity=".55"></stop><stop offset="${((r + 8) / halo).toFixed(3)}" stop-color="#7fb6d9" stop-opacity=".16"></stop><stop offset="1" stop-color="#7fb6d9" stop-opacity="0"></stop></radialGradient>` +
       `<radialGradient id="${id}-mer" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#356582"></stop><stop offset="60%" stop-color="#26495f"></stop><stop offset="100%" stop-color="#162f40"></stop></radialGradient>` +
       `<radialGradient id="${id}-lumiere" cx="35%" cy="29%" r="80%"><stop offset="0%" stop-color="#fff" stop-opacity=".19"></stop><stop offset="30%" stop-color="#fff" stop-opacity=".045"></stop><stop offset="60%" stop-color="#000" stop-opacity="0"></stop><stop offset="86%" stop-color="#000" stop-opacity=".2"></stop><stop offset="100%" stop-color="#000" stop-opacity=".5"></stop></radialGradient>`;
     this.carte.append(defs);
+    if (this.plat) {
+      // la carte à plat : la mer dans le bord de la carte, et le bord en trait clair, comme celui du globe
+      const bord = bordPlat(this.g);
+      this.disque = [svg("path", { d: bord, fill: `url(#${id}-mer)` }),
+        svg("path", { d: bord, fill: "none", stroke: "#a9d3ee", "stroke-opacity": .45, "stroke-width": 1.2, "pointer-events": "none" })];
+    }
     // le disque : halo, mer, lumière, bord (majDisque les déplace pendant le vol d'un palier à l'autre)
-    this.disque = [
+    else this.disque = [
       svg("circle", { cx, cy, r: halo, fill: `url(#${id}-halo)`, "data-marge": 24 }),
       svg("circle", { cx, cy, r, fill: `url(#${id}-mer)` }),
       svg("circle", { cx, cy, r, fill: `url(#${id}-lumiere)`, "pointer-events": "none" }),
       svg("circle", { cx, cy, r: r + .4, fill: "none", stroke: "#a9d3ee", "stroke-opacity": .45, "stroke-width": 1.2, "pointer-events": "none", "data-marge": .4 })
     ];
-    this.carte.append(this.disque[0], this.disque[1]);
+    // dessous : le halo et la mer (à plat, la mer seule) ; dessus, après les terres : la lumière et le bord
+    const dessous = this.plat ? this.disque.slice(0, 1) : this.disque.slice(0, 2), dessus = this.plat ? this.disque.slice(1) : this.disque.slice(2);
+    this.carte.append(...dessous);
 
     if (this.planete) {
       this.pTerre = svg("path", { fill: "#a9b08c", stroke: "#a9b08c", "stroke-width": .5, "stroke-linejoin": "round" });
@@ -284,7 +333,7 @@ export class Globe {
       }
       this.carte.append(gSocle, gPays, gDep, gReg);
     }
-    this.carte.append(this.disque[2], this.disque[3]);
+    this.carte.append(...dessus);
     this.pChoisi = this.carte.appendChild(svg("path", { class: "trait-choisi" }));
     C.append(this.carte);
     this.gestes();
@@ -385,6 +434,8 @@ export class Globe {
   // Plus de boutons fléchés à l'écran (demande du 24/11/2026) : on fait tourner le globe en le glissant, ou avec les
   // flèches du clavier ; la planète se remet à tourner seule 3 secondes après le dernier geste (voir reprendre()).
   commandes() {
+    this.majCommandes();
+    if (this.plat) return;                           // à plat, rien ne tourne : les flèches restent à la page
     const [pl, pn] = this.g.pas;
     const sens = { ArrowLeft: [-pl, 0], ArrowRight: [pl, 0], ArrowUp: [0, pn], ArrowDown: [0, -pn] };
     this.touches = (ev) => {
@@ -395,7 +446,6 @@ export class Globe {
       this.aller(d[0], d[1]);
     };
     addEventListener("keydown", this.touches);
-    this.majCommandes();
   }
 
   majCommandes() {
@@ -443,7 +493,7 @@ export class Globe {
       for (const it of this.items) {
         if (!it.el) continue;                                         // la France, remplacée par ses départements
         if (neuf || it.d == null) {
-          it.d = it.anneaux.map((v) => trace(v, rp, g)).join("");
+          it.d = it.anneaux.map((v) => (this.plat ? tracePlat(v, g) : trace(v, rp, g))).join("");
           it.el.setAttribute("d", it.d);
           if (it.socle) it.socle.setAttribute("d", it.d);
         }
@@ -459,7 +509,8 @@ export class Globe {
   }
 
   poser(rp) {
-    const g = this.vue, vus = this.lieux.map((l) => ({ l, ...projeter(l.lon, l.lat, rp) }));
+    // (à plat, tout se voit : z vaut 1 ; un nom posé deux fois s'affiche au premier endroit de la liste)
+    const g = this.vue, vus = this.lieux.map((l) => ({ l, ...(this.plat ? { ...aPlat(l.lon, l.lat), z: 1 } : projeter(l.lon, l.lat, rp)) }));
     // un même nom posé à plusieurs endroits ne s'affiche qu'une fois : là où il est le plus face à nous
     const meilleur = {};
     for (const v of vus) if (!(v.l.nom in meilleur) || v.z > meilleur[v.l.nom].z) meilleur[v.l.nom] = v;
@@ -487,7 +538,7 @@ export class Globe {
 
   // ---- Les mouvements ----
   aller(dlon, dlat, ms = 420) {
-    if (this.enVol) return;
+    if (this.enVol || this.plat) return;
     this.arreter();
     this.fermerCarte();
     const lon0 = this.etat.lon, lat0 = this.etat.lat, lat1 = borne(lat0 + dlat, -70, 70);
@@ -550,7 +601,7 @@ export class Globe {
     S.addEventListener("pointerdown", (ev) => {
       const p = this.appli.point(ev);
       const g = this.vue;
-      if (this.enVol || Math.hypot(p.x - g.cx, p.y - g.cy) > g.r + 24) return;
+      if (this.enVol || (!this.plat && Math.hypot(p.x - g.cx, p.y - g.cy) > g.r + 24)) return;
       this.arreter();
       cancelAnimationFrame(this.anim);
       this.glisse = { x: ev.clientX, y: ev.clientY, lon: this.etat.lon, lat: this.etat.lat, k: this.appli.k(), i: this.planete ? null : indice(ev), bouge: false, p };
@@ -572,6 +623,7 @@ export class Globe {
       const dx = (ev.clientX - gl.x) * gl.k, dy = (ev.clientY - gl.y) * gl.k;
       if (!gl.bouge && Math.hypot(dx, dy) < 4) return;
       if (!gl.bouge) { gl.bouge = true; this.fermerCarte(); this.bulle.hidden = true; }
+      if (this.plat) return;                         // à plat, glisser ne déplace rien (et ce n'est plus un clic)
       const deg = 180 / Math.PI / this.vue.r;
       this.etat.lon = gl.lon - dx * deg;
       this.etat.lat = borne(gl.lat + dy * deg, -70, 70);

@@ -44,8 +44,10 @@
     },
     "monde": {
       "nom": "Les États", "echelle": "des États", "type": "pays", "donnees": "monde.json",
-      "globe": { "cx": 700, "cy": 425, "r": 320, "lon": 12, "lat": 32, "pas": [30, 20] },
-      "aria": "La Terre et ses États. Glisse pour la faire tourner, clique sur un pays pour l'ouvrir.",
+      "_plat": "Une carte à plat depuis le 26/11/2026 (demande de Mathis) : projection Equal Earth, vraies surfaces (globe.js, aPlat) ; « globe » donne son centre (cx, cy) et son échelle (r : la carte fait 2 x 2,7066 r de large et 2 x 1,3173 r de haut). Avant : un globe, cx 700, cy 425, r 320, vu de 12° E, 32° N.",
+      "plat": true,
+      "globe": { "cx": 650, "cy": 385, "r": 195, "lon": 0, "lat": 0, "pas": [30, 20] },
+      "aria": "La carte du monde et de ses États, à plat. Clique sur un pays pour l'ouvrir.",
       "lieux": [
         { "nom": "L'ONU et ses agences", "sujet": "L'ONU et ses agences", "lon": -73.968, "lat": 40.749 },
         { "nom": "La justice internationale", "sujet": "La justice internationale", "lon": 4.3, "lat": 52.08 },

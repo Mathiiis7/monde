@@ -188,7 +188,8 @@ class Accueil {
     const Classe = { plan: Plan, livre: Livre, sommaire: Sommaire }[cfg.type] || Globe;
     // (le livre ouvert sur sa dernière page, la Terre d'aujourd'hui, donne aussi un point de départ : le globe part du
     // dessin ; sinon il n'en donne pas, 26/11/2026)
-    appli.depuis = Classe === Globe && ancien && ancien.etatVue && !calme() ? ancien.etatVue() : null;
+    // (vers ou depuis la carte à plat des États, 26/11/2026 : pas de vol, on plonge)
+    appli.depuis = Classe === Globe && !cfg.plat && ancien && ancien.etatVue && !calme() ? ancien.etatVue() : null;
     const vol = !!appli.depuis;
     const [cfgVu, donneesVues] = this.filtrer(id, cfg, donnees);
     const objet = new Classe(couche, cfgVu, donneesVues, appli);
@@ -327,7 +328,7 @@ class Accueil {
     const k = this.k(), sc = this.scene.getBoundingClientRect();
     const gauche = (this.ech.getBoundingClientRect().right - sc.left) * k - this.dx + 24;
     const droite = this.W * (1 - PART_LECTEUR) - this.dx - 24;
-    const r = Math.min(this.objet.g.r, (droite - gauche) / 2 - 24);
+    const r = Math.min(this.objet.g.r, ((droite - gauche) / 2 - 24) / (this.objet.etire || 1));   // à plat, la carte est plus large que haute
     return [(gauche + droite) / 2, Math.max(120, r)];
   }
 
