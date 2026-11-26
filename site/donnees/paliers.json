@@ -1,6 +1,6 @@
 {
   "_lire": "Réglages des paliers de l'accueil : le livre (premier écran depuis le 25/11/2026), puis les 6 paliers de la carte (8 dans la maquette : la région et le département sont devenus des contours de la France le 24/11/2026), repris de la maquette (toile « Monde, maquette », 19-23/11/2026). Les listes de sujets sont dans index.html ; ici, chaque nom de sujet doit y figurer (outils/site/verifier-sujets.py). Coordonnées en pixels de la scène de 1280 x 800 ; globe : centre (cx, cy), rayon r, point visé (lon, lat), pas des flèches [est-ouest, nord-sud] en degrés.",
-  "ordre": ["histoire", "planete", "monde", "europe", "france", "ville", "maison"],
+  "ordre": ["sommaire", "histoire", "planete", "monde", "europe", "france", "ville", "maison"],
   "territoires": [
     ["Guadeloupe", -61.55, 16.2], ["Martinique", -61.02, 14.64], ["Guyane", -53.1, 3.95],
     ["La Réunion", 55.53, -21.12], ["Mayotte", 45.15, -12.82], ["Saint-Pierre-et-Miquelon", -56.27, 46.95],
@@ -8,6 +8,10 @@
     ["Polynésie française", -149.43, -17.65], ["Nouvelle-Calédonie", 165.6, -21.3], ["Terres australes", 69.35, -49.35]
   ],
   "paliers": {
+    "sommaire": {
+      "_sommaire": "Le premier écran depuis le 26/11/2026 (choix de Mathis ; maquettes outils/maquette/accueil/) : une case par partie, et « carte », le palier où mène la case de la carte (sommaire.js).",
+      "nom": "Le sommaire", "echelle": "du sommaire", "type": "sommaire", "carte": "planete"
+    },
     "histoire": {
       "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, le titre sur la couverture (ni os ni « MONDE » ; une frise dorée dessous, voir « _planches »), de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
       "nom": "L'histoire", "echelle": "de l'histoire", "type": "livre",

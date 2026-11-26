@@ -1,10 +1,12 @@
 // L'accueil de Monde : une carte de la Terre qu'on zoome, en six paliers, de la planète à la maison (choix du
-// 19/11/2026), précédée d'un livre, « De la Terre jusqu'à nous », premier écran (choix du 25/11/2026).
+// 19/11/2026), précédée d'un livre, « De la Terre jusqu'à nous » (25/11/2026), et d'un sommaire, premier écran depuis
+// le 26/11/2026 (sommaire.js).
 // Ce fichier tient la scène, la réglette des échelles, le passage d'un palier à l'autre et les panneaux.
 // Les sujets de chaque palier sont lus dans index.html ; les réglages des paliers dans site/donnees/paliers.json.
 import { Globe } from "./globe.js";
 import { Plan } from "./plan.js";
 import { Livre } from "./livre.js";
+import { Sommaire } from "./sommaire.js";
 import { el, boutonFermer, calme } from "./outils.js";
 
 const BASE = new URL("../", import.meta.url);
@@ -174,7 +176,7 @@ class Accueil {
     let attente = setTimeout(() => { attente = el("p", { class: "chargement", texte: "Chargement…" }); this.scene.append(attente); }, 200);
     let donnees;
     try {
-      donnees = cfg.type === "livre" ? {}                              // le livre n'a rien à charger
+      donnees = cfg.type === "livre" || cfg.type === "sommaire" ? {}   // le livre et le sommaire n'ont rien à charger
         : cfg.type === "plan"
         ? { dessin: await charger("dessins/" + cfg.dessin, true), lieux: await charger("donnees/" + cfg.lieux) }
         : await charger("donnees/" + cfg.donnees);
@@ -197,11 +199,11 @@ class Accueil {
     const appli = {
       depart, territoires: this.reglages.territoires, visible: (nom) => this.visibles.has(nom),
       ouvrirSujet: (nom) => this.ouvrirSujet(nom), ouvrirListe: () => this.ouvrirListe(), charger: (c) => charger(c),
-      aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => this.k()
+      aller: (vers, dep) => this.aller(vers, dep), point: (ev) => this.point(ev), k: () => this.k(), reglages: this.reglages
     };
     const ancien = this.objet, ancienne = this.couche;
     // d'un globe à un globe : le nouveau part de l'image exacte de l'ancien et vole jusqu'à la sienne (un vrai zoom)
-    const Classe = { plan: Plan, livre: Livre }[cfg.type] || Globe;
+    const Classe = { plan: Plan, livre: Livre, sommaire: Sommaire }[cfg.type] || Globe;
     // (le livre ouvert sur sa dernière page, la Terre d'aujourd'hui, donne aussi un point de départ : le globe part du
     // dessin ; sinon il n'en donne pas, 26/11/2026)
     appli.depuis = Classe === Globe && ancien && ancien.etatVue && !calme() ? ancien.etatVue() : null;
@@ -280,8 +282,10 @@ class Accueil {
       else { a.removeAttribute("aria-current"); a.removeAttribute("aria-expanded"); }
     });
     this.bMoins.disabled = i === 0;
+    // sur le sommaire, ses cases mènent partout : pas de réglette (26/11/2026)
+    this.ech.hidden = this.reglages.paliers[this.actuel].type === "sommaire";
     this.bPlus.disabled = i === this.ordre.length - 1;
-    const n = this.listes[this.actuel].length;
+    const n = (this.listes[this.actuel] || []).length;   // le sommaire n'a pas de liste
     this.bListe.hidden = !this.tout || n === 0;                       // seulement pour les essais (?tout)
     this.bListe.textContent = n === 1 ? "1 sujet en liste" : `Les ${n} sujets en liste`;
   }
