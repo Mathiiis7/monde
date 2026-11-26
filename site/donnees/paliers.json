@@ -9,8 +9,9 @@
   ],
   "paliers": {
     "sommaire": {
-      "_sommaire": "Le premier écran depuis le 26/11/2026 (choix de Mathis ; maquettes outils/maquette/accueil/) : une case par partie, et « carte », le palier où mène la case de la carte (sommaire.js).",
-      "nom": "Le sommaire", "echelle": "du sommaire", "type": "sommaire", "carte": "planete"
+      "_sommaire": "Le premier écran depuis le 26/11/2026 (choix de Mathis ; maquettes outils/maquette/accueil/) : une case par partie (sommaire.js) ; « phrase », sous le titre « Monde ».",
+      "nom": "Le sommaire", "echelle": "du sommaire", "type": "sommaire",
+      "phrase": "Comment habitons-nous la Terre, et comment l'habiter demain ?"
     },
     "histoire": {
       "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, le titre sur la couverture (ni os ni « MONDE » ; une frise dorée dessous, voir « _planches »), de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
@@ -24,10 +25,9 @@
     },
     "planete": {
       "nom": "La Terre", "echelle": "de la Terre", "type": "terres", "donnees": "terres.json",
-      "globe": { "cx": 640, "cy": 375, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
+      "globe": { "cx": 640, "cy": 400, "r": 221, "lon": 10, "lat": 2, "pas": [30, 20], "tourne": true },
       "aria": "La Terre vue de l'espace, sans frontières. Glisse pour la faire tourner.",
-      "_question": "Sous la Terre, la question de Monde (26/11/2026 ; elle était à la fin de la fiche « L'histoire de la Terre et du vivant »).",
-      "question": "Comment habitons-nous la Terre, et comment l'habiter demain ?",
+      "_question": "La question de Monde, sous la Terre le 26/11/2026, est passée le même jour sous « Monde » dans le sommaire (« phrase ») ; le globe est revenu à cy 400.",
       "orbite": [
         { "sujet": "Ce qui rend la Terre habitable", "droite": 440, "y": 170 },
         { "sujet": "Les grands cycles", "droite": 392, "y": 290 },

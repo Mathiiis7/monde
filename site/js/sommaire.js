@@ -18,21 +18,21 @@ export class Sommaire {
       const sujets = section ? section.querySelectorAll("li").length : 0;
       const fiches = section ? [...section.querySelectorAll("li a[href]")].map((a) => a.textContent.trim()) : [];
       const p = reglages.paliers[id];
+      // une partie écrite dit juste son nombre de fiches, sans leurs titres, et son image au centre (Mathis, 26/11/2026)
       const compte = fiches.length
-        ? (fiches.length === 1 ? "1 fiche" : fiches.length + " fiches") + (sujets > fiches.length ? ` sur ${sujets} sujets` : "")
+        ? (fiches.length === 1 ? "1 fiche" : fiches.length + " fiches")
         : (sujets === 1 ? "1 sujet" : sujets + " sujets") + ", aucune fiche";
-      const corps = fiches.length
-        ? el("div", { class: "corps" }, p.type === "livre" ? petitLivre(p, appli) : null,
-            el("p", { class: "compte" }, fiches.map((f) => el("span", { texte: f })), compte))
-        : el("p", { class: "compte", texte: compte });
-      return el("a", { class: "partie" + (fiches.length ? " ecrite" : " vide"), href: "#" + id, "data-vers": id },
-        el("h2", { texte: p.nom }), corps);
+      return el("a", { class: "partie" + (fiches.length ? " ecrite" : " vide"), href: "#" + id, "data-vers": id, "aria-label": p.nom + " : " + compte },
+        el("h2", { texte: p.nom }),
+        fiches.length && p.type === "livre" ? el("div", { class: "image" }, petitLivre(p, appli)) : null,
+        el("p", { class: "compte", texte: compte }));
     });
     couche.append(el("div", { class: "sommaire-ecran" },
       el("h1", { texte: "Monde" }),
-      el("nav", { class: "parties", "aria-label": "Les parties de Monde" }, cases),
-      // obligatoires tant que le site est public ; seul reste du « ? » retiré le 26/11/2026
-      el("p", { class: "pied" }, el("a", { href: "mentions-legales.html", texte: "Mentions légales" }))));
+      // la phrase sous le titre (paliers.json ; choix de Mathis, 26/11/2026 : sa question) ; plus de lien vers les mentions
+      // légales (retiré à sa demande le même jour, la page reste à son adresse)
+      cfg.phrase ? el("p", { class: "phrase", texte: cfg.phrase }) : null,
+      el("nav", { class: "parties", "aria-label": "Les parties de Monde" }, cases)));
   }
 
   detruire() {}
