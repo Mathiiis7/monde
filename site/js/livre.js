@@ -1,10 +1,10 @@
 // Le livre, premier écran de Monde (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un grand
-// livre « De la Terre jusqu'à nous », un cran avant la Terre dans la réglette. Depuis le 26/11/2026, un vieux
+// livre « L'histoire de la Terre » (titre du 26/11/2026, avant « De la Terre jusqu'à nous »), un cran avant la Terre dans la réglette. Depuis le 26/11/2026, un vieux
 // livre légèrement usé (dessin-livre.js, maquette vieux.html). Rien ne bouge tout seul (leçon de l'ancien « voyage dans le
 // temps ») : un clic, ou Entrée, ouvre la couverture, puis la fiche arrive dans le panneau de droite de l'accueil
 // (accueil.js, ouvrirLecteur) et le livre ouvert se range à gauche ; la croix et Échap referment.
-// Depuis le 26/11/2026 (maquettes outils/maquette/livre/pages.html et croquis.html) : une frise dorée sur
-// la couverture, sous le titre ; ouvert, un dessin par étape de la fiche sur la page de droite (site/dessins/livre/,
+// Depuis le 26/11/2026 (maquettes outils/maquette/livre/pages.html et croquis.html) : le titre seul sur la couverture
+// (la frise dorée dessous retirée le même jour, demande de Mathis) ; ouvert, un dessin par étape de la fiche sur la page de droite (site/dessins/livre/,
 // écrits par outils/site/faire-planches.mjs), de fausses lignes à gauche. Quand la fiche change d'étape, elle prévient
 // l'accueil, qui le dit au livre (etape) : une feuille tourne vers l'avant ou vers l'arrière et montre le dessin de l'étape.
 import { el, calme } from "./outils.js";
@@ -44,15 +44,14 @@ export class Livre {
     this.page = 0;   // l'étape de la fiche que montre le livre ouvert
     // la demi-largeur du livre ouvert à sa taille rangée : l'accueil la réduit si la place manque (placeLecteur)
     this.g = { r: LARGEUR * RANGE };
-    // le vieux livre dessiné (dessin-livre.js), le texte et la frise de la couverture, les pages par-dessus
+    // le vieux livre dessiné (dessin-livre.js), le titre de la couverture, les pages par-dessus
     const d = dessinerLivre({ u: cfg.usure, graine: cfg.tirage });
     const dessin = (code) => { const t = document.createElement("template"); t.innerHTML = code; return t.content.firstElementChild; };
     const lignes = () => { const div = el("div", { class: "lignes" }); remplir(div, LIGNES.gauche); return div; };
     // une image par étape, une seule visible ; leur adresse n'est posée qu'à la première ouverture (le premier écran
     // ne les télécharge pas)
     const planches = () => Array.from({ length: cfg.planches }, (_, k) => el("img", { class: "planche", alt: "", hidden: k !== 0, decoding: "sync" }));
-    const cadre = el("div", { class: "cadre" }, el("span", { class: "titre", texte: cfg.sujet }),
-      el("img", { class: "motif", src: DESSINS + "couverture.svg", alt: "", width: 210, height: 49 }));
+    const cadre = el("div", { class: "cadre" }, el("span", { class: "titre", texte: cfg.sujet }));
     cadre.style.webkitMaskImage = cadre.style.maskImage = masqueTexte(cfg.tirage, cfg.usure);   // la dorure un peu passée
     this.droite = planches();
     this.surRecto = planches();

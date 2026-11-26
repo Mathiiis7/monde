@@ -14,11 +14,11 @@
       "phrase": "Comment habitons-nous la Terre, et comment l'habiter demain ?"
     },
     "histoire": {
-      "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, le titre sur la couverture (ni os ni « MONDE » ; une frise dorée dessous, voir « _planches »), de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
+      "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, le titre sur la couverture (ni os ni « MONDE » ; une frise dorée dessous, retirée le même jour, demande de Mathis ; titre « L'histoire de la Terre », avant « De la Terre jusqu'à nous »), de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
       "nom": "L'histoire", "echelle": "de l'histoire", "type": "livre",
-      "sujet": "De la Terre jusqu'à nous",
+      "sujet": "L'histoire de la Terre",
       "usure": 1, "tirage": 46,
-      "_planches": "Depuis le 26/11/2026 : une frise dorée sur la couverture, et un dessin par étape de la fiche dans le livre ouvert (site/dessins/livre/etape-1.svg à etape-N.svg, écrits par outils/site/faire-planches.mjs) ; « planches » est le nombre d'étapes de la fiche.",
+      "_planches": "Depuis le 26/11/2026 : un dessin par étape de la fiche dans le livre ouvert (site/dessins/livre/etape-1.svg à etape-N.svg, écrits par outils/site/faire-planches.mjs) ; « planches » est le nombre d'étapes de la fiche.",
       "planches": 9,
       "_sortie": "Sur la dernière page (la Terre d'aujourd'hui), un clic sur la Terre dessinée mène à ce palier ; son globe part du dessin (26/11/2026).",
       "sortie": "planete"
