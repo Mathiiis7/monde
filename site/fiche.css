@@ -33,7 +33,7 @@ html.en-panneau .f-chapeau { font-size: 16px; }
 .f-centre { display: none; }
 html.horloge .f-centre { display: block; position: sticky; top: var(--barre, 0px); height: 0; z-index: 4; }
 .f-horloge { position: absolute; left: -32px; right: -32px; top: 0; padding: 12px 0 10px; display: flex; flex-direction: column; align-items: center; text-align: center; background: linear-gradient(var(--fond) 90%, rgb(31 36 43 / 0)); }
-/* l'écart au-dessus du cadran reste le même quand on fait défiler (demande de Mathis du 25/11/2026) : la marge du haut de
+/* l'écart au-dessus du cadran reste le même quand on fait défiler (demande du 25/11/2026) : la marge du haut de
    la page passe dans l'horloge, qui colle dès le départ */
 html.horloge .f-page { padding-top: 0; }
 html.horloge .f-horloge { padding-top: 44px; }
@@ -67,11 +67,11 @@ html.en-panneau .f-horloge .bord { fill: var(--fond); }
 .f-horloge .h-loupe p { margin: 2px 0; font-size: 12.5px; color: var(--encre-2); line-height: 1.3; }
 
 /* Une étape à la fois (avec JavaScript) : chaque étape occupe un écran de défilement ; son texte reste sous le cadran,
-   apparaît quand on l'atteint et s'efface aussitôt qu'on la dépasse, avant de monter derrière l'horloge (demande de
-   Mathis du 25/11/2026). Une étape dont une note est ouverte défile normalement, pour qu'on lise tout le détail. */
+   apparaît quand on l'atteint et s'efface aussitôt qu'on la dépasse, avant de monter derrière l'horloge (demande du
+   25/11/2026). Une étape dont une note est ouverte défile normalement, pour qu'on lise tout le détail. */
 html.horloge .f-tete { min-height: calc(var(--horloge, 320px) + 4px + 14vh); padding-top: calc(var(--horloge, 320px) + 4px); box-sizing: border-box; transition: opacity .3s; }
 html.horloge .f-tete.parti { opacity: 0; }
-/* chaque étape vaut environ trois crans de molette (demande de Mathis du 25/11/2026 : « il faut défiler trop longtemps ») ;
+/* chaque étape vaut environ trois crans de molette (demande du 25/11/2026 : « il faut défiler trop longtemps ») ;
    son texte, de hauteur nulle pour la page, apparaît directement à sa place sous le cadran au lieu de monter du bas de
    l'écran, et y reste jusqu'à ce que la suivante le remplace */
 html.horloge .f-etape { min-height: 38vh; }
@@ -86,7 +86,7 @@ html.horloge .f-etape.f-dernier { min-height: 48vh; }  /* fiche.js l'ajuste à l
 html.horloge .f-etape.f-dernier .f-in { height: auto; }
 @media (prefers-reduced-motion: reduce) { html.horloge .f-in, html.horloge .f-tete, .f-horloge .h-loupe { transition: none; transform: none !important; } }
 .f-consigne { color: var(--encre-2); font-size: 15px; }
-/* avec l'horloge, le titre et le chapeau ne s'affichent pas (demande de Mathis du 25/11/2026 : l'horloge dit déjà de quoi
+/* avec l'horloge, le titre et le chapeau ne s'affichent pas (demande du 25/11/2026 : l'horloge dit déjà de quoi
    il s'agit) ; ils restent dans la page pour les lecteurs d'écran, les moteurs et la version sans JavaScript */
 html.horloge .f-tete h1, html.horloge .f-tete .f-chapeau { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 html.horloge .f-consigne { text-align: center; margin: 0; }

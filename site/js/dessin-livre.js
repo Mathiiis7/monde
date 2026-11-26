@@ -205,7 +205,7 @@ function interieur(id, r, graine, u, forme) {
   ${papier(id + "-p", r, graine + 7, u, page, [7, 6, 293, 388], "droite")}</svg>`;
 }
 
-// Un masque pour le titre et les os : la dorure un peu passée par endroits (image à poser en mask-image).
+// Un masque pour le titre : la dorure un peu passée par endroits (image à poser en mask-image).
 export function masqueTexte(graine, u = 1) {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='360'><filter id='m' x='0' y='0' width='1' height='1' color-interpolation-filters='sRGB'>` +
     `<feTurbulence type='fractalNoise' baseFrequency='.035' numOctaves='1' seed='${graine}'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.5 ${-(0.05 + 0.2 * u).toFixed(2)}'/></filter>` +

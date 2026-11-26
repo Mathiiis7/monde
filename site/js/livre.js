@@ -3,8 +3,7 @@
 // livre légèrement usé, avec de fausses lignes quand il est ouvert (dessin-livre.js, maquette vieux.html). Rien ne bouge tout seul (leçon
 // de l'ancien « voyage dans le temps ») : un clic, ou Entrée, ouvre la couverture, puis la fiche arrive dans le panneau
 // de droite de l'accueil (accueil.js, ouvrirLecteur) et le livre ouvert se range à gauche ; la croix et Échap referment.
-import { el, svg, calme } from "./outils.js";
-import { OS } from "./globe.js";
+import { el, calme } from "./outils.js";
 import { dessinerLivre, masqueTexte, LIGNES } from "./dessin-livre.js";
 
 const LARGEUR = 300;          // le livre fermé, en pixels de la carte (300 x 400, centré dans le cadre de 1280 x 800)
@@ -22,9 +21,7 @@ export class Livre {
     const d = dessinerLivre({ u: cfg.usure, graine: cfg.tirage });
     const dessin = (code) => { const t = document.createElement("template"); t.innerHTML = code; return t.content.firstElementChild; };
     const lignes = (l) => el("div", { class: "lignes" }, l.map((w) => (w ? el("i", { style: `width:${w}%` }) : el("b"))));
-    const os = svg("svg", { class: "os", viewBox: "0 0 28 28", "aria-hidden": "true" });
-    os.innerHTML = OS;
-    const cadre = el("div", { class: "cadre" }, os, el("span", { class: "titre", texte: cfg.sujet }));   // sans « MONDE » (26/11/2026)
+    const cadre = el("div", { class: "cadre" }, el("span", { class: "titre", texte: cfg.sujet }));   // le titre seul : ni « MONDE » ni os (26/11/2026)
     cadre.style.webkitMaskImage = cadre.style.maskImage = masqueTexte(cfg.tirage, cfg.usure);   // la dorure un peu passée
     this.livre = el("div", { class: "livre", tabindex: "0", role: "button", "aria-label": "Ouvrir « " + cfg.sujet + " »",
       onclick: () => this.ouvrir(),

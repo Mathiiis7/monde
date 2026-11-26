@@ -1,4 +1,4 @@
-// Une fiche, présentation « l'horloge qu'on fait défiler » (choix de Mathis du 25/11/2026) : un cadran de 24 heures en
+// Une fiche, présentation « l'horloge qu'on fait défiler » (choix du 25/11/2026) : un cadran de 24 heures en
 // haut, au centre ; le texte dessous, une étape à la fois. Seul le défilement fait avancer l'horloge (rien ne se déroule
 // tout seul : leçon de l'ancien « voyage dans le temps », retiré). Sans JavaScript, la page se lit de haut en bas.
 const racine = document.documentElement, etapes = [...document.querySelectorAll(".f-etape")];
@@ -167,7 +167,7 @@ function majHorloge() {
   peindre(age, i);
 }
 
-// Un clic sur l'horloge (ou Entrée, Espace quand elle a le focus) passe à l'étape suivante (demande de Mathis du
+// Un clic sur l'horloge (ou Entrée, Espace quand elle a le focus) passe à l'étape suivante (demande du
 // 25/11/2026) : la page défile jusqu'à elle, posée sous le cadran, et l'aiguille avance pendant le défilement.
 let etapeIci = -1;
 const pose = () => { const R = getComputedStyle(racine); return parseFloat(R.getPropertyValue("--barre")) + parseFloat(R.getPropertyValue("--horloge")) + 4; };
@@ -200,7 +200,7 @@ if (avecHorloge) {
   cadrans.addEventListener("click", suivante);
   cadrans.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); suivante(); } });
   etapes[etapes.length - 1].classList.add("f-dernier");
-  // Plus une étape couvre de temps, plus il faut défiler pour la passer (demande de Mathis du 25/11/2026 : les premières
+  // Plus une étape couvre de temps, plus il faut défiler pour la passer (demande du 25/11/2026 : les premières
   // passaient trop vite pour les milliards d'années qu'elles représentent). Pas tout à fait à proportion : à l'échelle,
   // les dernières étapes ne feraient même pas un pixel ; on prend la racine carrée de la durée, plafonnée.
   etapes.slice(0, -1).forEach((e, k) => {
