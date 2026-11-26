@@ -94,14 +94,15 @@ class Accueil {
     const S = this.scene;
     // ni logo « Monde » ni bouton de liste sur la carte (demande du 25/11/2026 : rien d'inutile à l'écran ; la réglette
     // ramène à la planète) ; la liste reste dans la page sans JavaScript, et ?tout garde le bouton pour les essais
-    // le lexique est dans le « ? » ; les grandes questions et les modèles restent cachés tant qu'on écrit les fiches une à une
-    const pages = this.tout ? ["Les grandes questions", "Les modèles et leurs noms"] : [];
-    // le « ? » dans le coin en haut à droite (demande du 25/11/2026) ; avec ?tout, le bouton de liste passe à gauche
-    S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "right:24px" },
-      pages.map((p) => el("button", { texte: p, onclick: (ev) => this.ouvrirPage(p, ev.currentTarget) })),
-      this.construireAide()));
-    this.bListe = el("button", { class: "capbtn", style: "left:24px;right:auto", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
-    S.append(this.bListe);
+    // les grandes questions et les modèles restent cachés tant qu'on écrit les fiches une à une (?tout les montre).
+    // Plus de « ? » (26/11/2026, Mathis : le lexique était vide, « Comment Monde est fait » n'est plus tenu à jour) ; les
+    // mentions légales sont en bas du sommaire.
+    if (this.tout) S.append(el("nav", { class: "cap", "aria-label": "À toutes les échelles", style: "right:24px" },
+      ["Les grandes questions", "Les modèles et leurs noms"].map((p) => el("button", { texte: p, onclick: (ev) => this.ouvrirPage(p, ev.currentTarget) }))));
+    // « Sommaire » en haut à gauche de chaque écran, sauf du sommaire lui-même (demande du 26/11/2026)
+    this.bSommaire = el("a", { class: "capbtn", href: "#" + this.ordre[0], texte: "Sommaire", style: "left:24px;right:auto" });
+    this.bListe = el("button", { class: "capbtn", style: "left:150px;right:auto", "aria-expanded": "false", onclick: () => (this.pan ? this.fermerPanneaux() : this.ouvrirListe()) });
+    S.append(this.bSommaire, this.bListe);
     // repliée, la réglette ne montre que le nom du palier : un clic dessus la déplie (pas le survol, qui déplaçait + et −
     // sous la souris, 26/11/2026) ; dépliée, un clic sur un palier y mène et la replie
     this.rail = this.ordre.map((id) => el("a", { class: "st", href: "#" + id, onclick: (ev) => {
@@ -124,25 +125,6 @@ class Accueil {
     return true;
   }
 
-  // « ? » au bout de la barre du haut : un petit menu vers le lexique et les deux pages sur le site lui-même, « Comment
-  // Monde est fait » et les mentions légales (demandes du 24/11/2026). Il se ferme par Échap ou par un clic ailleurs.
-  construireAide() {
-    this.bAide = el("button", { class: "aide", texte: "?", "aria-label": "Lexique et à propos de Monde", "aria-expanded": "false",
-      "aria-controls": "menu-aide", onclick: () => this.basculerAide() });
-    this.menuAide = el("div", { class: "menu-aide", id: "menu-aide", hidden: true },
-      el("button", { texte: "Lexique", onclick: () => { this.basculerAide(false); this.ouvrirPage("Lexique"); } }),
-      el("a", { href: "comment-monde-est-fait.html", texte: "Comment Monde est fait" }),
-      el("a", { href: "mentions-legales.html", texte: "Mentions légales" }));
-    addEventListener("pointerdown", (ev) => { if (!this.menuAide.hidden && !ev.target.closest(".aide-boite")) this.basculerAide(false); });
-    return el("div", { class: "aide-boite" }, this.bAide, this.menuAide);
-  }
-
-  basculerAide(ouvrir = this.menuAide.hidden) {
-    this.menuAide.hidden = !ouvrir;
-    this.bAide.setAttribute("aria-expanded", String(ouvrir));
-    if (ouvrir) this.menuAide.firstElementChild.focus();
-    return true;
-  }
 
   pas(sens) {
     const i = this.ordre.indexOf(this.actuel) + sens;
@@ -283,7 +265,7 @@ class Accueil {
     });
     this.bMoins.disabled = i === 0;
     // sur le sommaire, ses cases mènent partout : pas de réglette (26/11/2026)
-    this.ech.hidden = this.reglages.paliers[this.actuel].type === "sommaire";
+    this.ech.hidden = this.bSommaire.hidden = this.reglages.paliers[this.actuel].type === "sommaire";
     this.bPlus.disabled = i === this.ordre.length - 1;
     const n = (this.listes[this.actuel] || []).length;   // le sommaire n'a pas de liste
     this.bListe.hidden = !this.tout || n === 0;                       // seulement pour les essais (?tout)
@@ -383,7 +365,6 @@ class Accueil {
   }
 
   echap() {
-    if (!this.menuAide.hidden) { this.basculerAide(false); this.bAide.focus(); return; }
     if (this.deplier(false)) return;
     if (this.fermerLecteur()) return;
     if (this.fermerPanneaux()) return;

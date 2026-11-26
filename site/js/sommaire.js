@@ -30,7 +30,9 @@ export class Sommaire {
     });
     couche.append(el("div", { class: "sommaire-ecran" },
       el("h1", { texte: "Monde" }),
-      el("nav", { class: "parties", "aria-label": "Les parties de Monde" }, cases)));
+      el("nav", { class: "parties", "aria-label": "Les parties de Monde" }, cases),
+      // obligatoires tant que le site est public ; seul reste du « ? » retiré le 26/11/2026
+      el("p", { class: "pied" }, el("a", { href: "mentions-legales.html", texte: "Mentions légales" }))));
   }
 
   detruire() {}
