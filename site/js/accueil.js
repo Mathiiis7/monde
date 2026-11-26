@@ -1,5 +1,5 @@
 // L'accueil de Monde : une carte de la Terre qu'on zoome, en six paliers, de la planète à la maison (choix du
-// 19/11/2026), précédée d'un livre, « L'histoire de la Terre et du vivant », premier écran (choix du 25/11/2026).
+// 19/11/2026), précédée d'un livre, « De la Terre jusqu'à nous », premier écran (choix du 25/11/2026).
 // Ce fichier tient la scène, la réglette des échelles, le passage d'un palier à l'autre et les panneaux.
 // Les sujets de chaque palier sont lus dans index.html ; les réglages des paliers dans site/donnees/paliers.json.
 import { Globe } from "./globe.js";

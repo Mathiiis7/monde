@@ -1,5 +1,5 @@
 // Le livre, premier écran de Monde (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un grand
-// livre « L'histoire de la Terre et du vivant », un cran avant la Terre dans la réglette. Depuis le 26/11/2026, un vieux
+// livre « De la Terre jusqu'à nous », un cran avant la Terre dans la réglette. Depuis le 26/11/2026, un vieux
 // livre légèrement usé, avec de fausses lignes quand il est ouvert (dessin-livre.js, maquette vieux.html). Rien ne bouge tout seul (leçon
 // de l'ancien « voyage dans le temps ») : un clic, ou Entrée, ouvre la couverture, puis la fiche arrive dans le panneau
 // de droite de l'accueil (accueil.js, ouvrirLecteur) et le livre ouvert se range à gauche ; la croix et Échap referment.

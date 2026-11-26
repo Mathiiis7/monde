@@ -67,8 +67,10 @@ html.en-panneau .f-horloge { background: linear-gradient(var(--surface) 90%, rgb
 .f-horloge .h-petit.on { opacity: 1; }
 .f-horloge .h-petit .bord { fill: var(--fond); stroke-width: 1; }
 html.en-panneau .f-horloge .h-petit .bord { fill: var(--surface); }
-.f-horloge .h-lu { margin: 8px 0 0; font-family: var(--titre); font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
-.f-horloge .h-titre { font-family: var(--titre); font-size: 16px; font-weight: 500; margin: 6px 0 0; line-height: 1.35; }
+/* l'heure et le titre au plus près du cercle (26/11/2026) : sous le cercle, le dessin garde un vide d'un dixième de sa
+   taille (le cercle a un rayon de 118 sur 150), que la marge négative reprend */
+.f-horloge .h-lu { margin: calc(6px - var(--d) * .1) 0 0; font-family: var(--titre); font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.f-horloge .h-titre { font-family: var(--titre); font-size: 16px; font-weight: 500; margin: 2px 0 0; line-height: 1.35; }
 
 /* Une étape à la fois (avec JavaScript) : les étapes sont posées l'une sur l'autre sous le cadran, seule celle en cours
    se voit ; on passe de l'une à l'autre par les flèches (26/11/2026, à la place du défilement d'étape en étape).

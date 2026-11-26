@@ -11,7 +11,7 @@
     "histoire": {
       "_livre": "Le premier écran (choix du 25/11/2026 ; maquette outils/maquette/livre/index.html) : un livre fermé, couverture marron, les deux os, le titre de la fiche et « MONDE » ; un clic l'ouvre et la fiche s'affiche dans le panneau de droite (livre.js). Depuis le 26/11/2026, un vieux livre légèrement usé, le titre seul sur la couverture (ni os ni « MONDE »), de fausses lignes quand il est ouvert (dessin-livre.js) : « usure » et « tirage » choisis dans la maquette outils/maquette/livre/vieux.html.",
       "nom": "L'histoire", "echelle": "de l'histoire", "type": "livre",
-      "sujet": "L'histoire de la Terre et du vivant",
+      "sujet": "De la Terre jusqu'à nous",
       "usure": 1, "tirage": 46
     },
     "planete": {
