@@ -5,6 +5,7 @@
 // haut en bas.
 const racine = document.documentElement, etapes = [...document.querySelectorAll(".f-etape")];
 const avecHorloge = racine.classList.contains("horloge") && etapes.length > 0;
+const dansPanneau = racine.classList.contains("en-panneau") && window.parent !== window;   // ouverte dans l'accueil (?panneau)
 
 // ---- Les notes : chaque phrase porte la sienne (plus de rond après elle depuis le 26/11/2026). Au survol, ou au
 // clavier, la phrase se surligne (CSS) et une bulle donne la note et pourquoi ; un clic, ou Entrée, ouvre sous son
@@ -180,6 +181,8 @@ function allerA(k, anime = true) {
   cacherBulle();
   fermerDetails();
   ici = k;
+  // ouverte dans le panneau de l'accueil : le livre ouvert à gauche tourne la page et montre le dessin de l'étape
+  if (dansPanneau) window.parent.postMessage({ type: "monde:etape", k, anime }, location.origin);
   etapes.forEach((e, j) => { e.classList.toggle("ici", j === k); e.classList.toggle("passe", j < k); e.classList.toggle("avenir", j > k); });
   fleches.arriere.disabled = k === 0;
   fleches.avant.disabled = k === etapes.length - 1;
@@ -229,6 +232,10 @@ cibler();
 if (avecHorloge && ici < 0) allerA(0, false);
 
 // Ouverte dans le panneau de droite de l'accueil (?panneau) : Échap demande à l'accueil de fermer le panneau.
-if (racine.classList.contains("en-panneau") && window.parent !== window) {
+// Et les flèches gauche et droite que l'accueil lui passe quand c'est lui qui a la main (26/11/2026).
+if (dansPanneau) {
   addEventListener("keydown", (ev) => { if (ev.key === "Escape") window.parent.postMessage("monde:fermer-fiche", location.origin); });
+  addEventListener("message", (ev) => {
+    if (ev.origin === location.origin && ev.source === window.parent && ev.data && ev.data.type === "monde:fleche" && avecHorloge) allerA(ici + (ev.data.sens > 0 ? 1 : -1));
+  });
 }

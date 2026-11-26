@@ -168,10 +168,10 @@ function couverture(id, r, graine, u, forme) {
   </g></svg>`;
 }
 
-// Le bloc des pages, sous la couverture : 301 x 401, décalé de (6, 5) ; sa tranche dépasse à droite et en bas
-// (l'épaisseur du livre), la page de droite du livre ouvert couvre (0, 0) à (295, 396).
-function bloc(id, r, graine, u) {
-  const tb = tour(0, 0, 301, 401, [2, 5, 6, 2]), formeBloc = trace(deformer(tb, irregulier(r, tb, 0.7 * u, 0.3 * u, 0, 5, u)));
+// Une pile de pages : 301 x 401 ; sa tranche dépasse à droite et en bas (l'épaisseur), la page du dessus couvre (0, 0) à
+// (295, 396).
+function pile(id, r, u) {
+  const tb = tour(0, 0, 301, 401, [2, 5, 6, 2]), forme = trace(deformer(tb, irregulier(r, tb, 0.7 * u, 0.3 * u, 0, 5, u)));
   const tp = tour(0, 0, 295, 396, [1, 3, 3, 1]), page = deformer(tp, irregulier(r, tp, 0.5 * u, 0.2 * u));
   let tranche = "";
   for (let i = 0; i < 6; i++) {
@@ -182,27 +182,42 @@ function bloc(id, r, graine, u) {
     const b = bruit(r, 301, 25, 0.3);
     tranche += `<path d="${ligne(Array.from({ length: 31 }, (_, k) => [2 + k * 9.9, 396.6 + i * 0.95 + b(k * 10)]))}" stroke="${i % 2 ? "#b49a6f" : "#e6d6b2"}"/>`;
   }
-  return `<svg class="dessin" viewBox="0 0 301 401" overflow="visible" aria-hidden="true"><defs>
-  <clipPath id="${id}-b"><path d="${formeBloc}"/></clipPath>
-  <filter id="${id}-ombre" x="-30%" y="-20%" width="160%" height="150%"><feGaussianBlur stdDeviation="14"/></filter>
-  </defs>
-  <path d="${formeBloc}" fill="#000" opacity=".5" transform="translate(0 12)" filter="url(#${id}-ombre)"/>
-  <g clip-path="url(#${id}-b)"><rect width="301" height="401" fill="#cdb68c"/><g fill="none" stroke-width=".7">${tranche}</g></g>
-  ${papier(id, r, graine + 5, u, page, [0, 0, 295, 396], "gauche")}</svg>`;
+  const bord = `<defs><clipPath id="${id}-b"><path d="${forme}"/></clipPath></defs>` +
+    `<g clip-path="url(#${id}-b)"><rect width="301" height="401" fill="#cdb68c"/><g fill="none" stroke-width=".7">${tranche}</g></g>`;
+  return { forme, page, bord };
 }
 
-// L'intérieur de la couverture, vu quand le livre est ouvert (le dos est à droite) : le cuir, retourné, autour d'une page.
+// Le bloc des pages, sous la couverture : une pile, décalée de (6, 5) ; la page de droite du livre ouvert.
+function bloc(id, r, graine, u) {
+  const p = pile(id, r, u);
+  return [`<svg class="dessin" viewBox="0 0 301 401" overflow="visible" aria-hidden="true"><defs>
+  <filter id="${id}-ombre" x="-30%" y="-20%" width="160%" height="150%"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <path d="${p.forme}" fill="#000" opacity=".5" transform="translate(0 12)" filter="url(#${id}-ombre)"/>
+  ${p.bord}
+  ${papier(id, r, graine + 5, u, p.page, [0, 0, 295, 396], "gauche")}</svg>`,
+  // la même page seule, pour la feuille qui tourne (au même endroit que le bloc)
+  `<svg class="dessin" viewBox="0 0 301 401" overflow="visible" aria-hidden="true">${papier(id + "-t", r, graine + 5, u, p.page, [0, 0, 295, 396], "gauche")}</svg>`];
+}
+
+// L'intérieur de la couverture, vu quand le livre est ouvert (le dos est à droite) : le cuir, retourné, et posée dessus
+// une pile de pages, le miroir de celle de droite (demande du 26/11/2026 : la page de gauche paraissait plus petite).
+// Le bloc de droite est décalé de (3, 4) et réduit à 0,975 (styles.css, .feuille) : son miroir, couverture ouverte à plat.
+const BLOC = { x: 3, y: 4, k: 0.975 };
+const MIROIR = `translate(${300 - BLOC.x} ${BLOC.y}) scale(${-BLOC.k} ${BLOC.k})`;
 function interieur(id, r, graine, u, forme) {
   const d = trace(forme.map(([x, y]) => [300 - x, y]));
-  const tp = tour(7, 6, 293, 388, [3, 1, 1, 3]), page = deformer(tp, irregulier(r, tp, 0.5 * u, 0.2 * u));
-  return `<svg class="dessin" viewBox="0 0 300 400" overflow="visible" aria-hidden="true"><defs>
+  const p = pile(id + "g", r, u);
+  return [`<svg class="dessin" viewBox="0 0 300 400" overflow="visible" aria-hidden="true"><defs>
   <clipPath id="${id}-f"><path d="${d}"/></clipPath>
   ${filtre(`${id}-grain`, 0.85, 2, graine + 1, [0.06, 0.04, 0.02], 1.5, -0.55)}
   <filter id="${id}-ombre" x="-30%" y="-20%" width="160%" height="150%"><feGaussianBlur stdDeviation="14"/></filter>
   </defs>
   <path d="${d}" fill="#000" opacity=".45" transform="translate(0 12)" filter="url(#${id}-ombre)"/>
   <g clip-path="url(#${id}-f)"><rect width="300" height="400" fill="#46311f"/><rect width="300" height="400" filter="url(#${id}-grain)" opacity=".7"/></g>
-  ${papier(id + "-p", r, graine + 7, u, page, [7, 6, 293, 388], "droite")}</svg>`;
+  <g transform="${MIROIR}">${p.bord}${papier(id + "-p", r, graine + 7, u, p.page, [0, 0, 295, 396], "gauche")}</g></svg>`,
+  // la même page seule, pour la feuille qui tourne (au même endroit que l'intérieur de la couverture)
+  `<svg class="dessin" viewBox="0 0 300 400" overflow="visible" aria-hidden="true"><g transform="${MIROIR}">${papier(id + "-t", r, graine + 7, u, p.page, [0, 0, 295, 396], "gauche")}</g></svg>`];
 }
 
 // Un masque pour le titre : la dorure un peu passée par endroits (image à poser en mask-image).
@@ -213,16 +228,17 @@ export function masqueTexte(graine, u = 1) {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
-// Les trois dessins d'un livre : la couverture, le bloc des pages, l'intérieur de la couverture.
+// Les dessins d'un livre : la couverture, le bloc des pages, l'intérieur de la couverture ; et, pour la feuille qui
+// tourne, la page de droite seule (recto, au même endroit que le bloc) et celle de gauche seule (verso, au même endroit
+// que l'intérieur de la couverture), mêmes contours et même papier.
 export function dessinerLivre({ u = 1, graine = 7 } = {}) {
   const id = "vl" + ++compteur, r = hasard(graine);
   const NERV = [62, 138, 262, 338];
   const tc = tour(0, 0, 300, 400, [3, 8, 10, 3]), base = irregulier(r, tc, 1.1 * u, 0.35 * u, 1.1 * u, 8, u);
   // les nervures du dos dépassent à peine sur le bord gauche
   const forme = deformer(tc, (p) => base(p) + (p[2] < -0.9 ? NERV.reduce((t, y) => t + 1.1 * Math.exp(-(((p[1] - y) / 3.5) ** 2)), 0) : 0));
-  return {
-    couverture: couverture(id + "c", r, graine, u, forme),
-    bloc: bloc(id + "b", r, graine + 10, u),
-    interieur: interieur(id + "i", r, graine + 20, u, forme)
-  };
+  const couv = couverture(id + "c", r, graine, u, forme);
+  const [b, recto] = bloc(id + "b", r, graine + 10, u);
+  const [i, verso] = interieur(id + "i", r, graine + 20, u, forme);
+  return { couverture: couv, bloc: b, interieur: i, recto, verso };
 }

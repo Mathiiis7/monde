@@ -44,8 +44,21 @@ class Accueil {
     this.ajuster();
     addEventListener("resize", () => this.ajuster());
     addEventListener("hashchange", () => this.suivreAdresse());
-    addEventListener("keydown", (ev) => { if (ev.key === "Escape") this.echap(); });
-    addEventListener("message", (ev) => { if (ev.origin === location.origin && ev.data === "monde:fermer-fiche") this.fermerLecteur(); });
+    addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") this.echap();
+      // la fiche ouverte depuis le livre : les flèches gauche et droite lui sont passées quand elle n'a pas la main
+      // (juste après l'ouverture, la croix l'a) ; elle change d'étape et le livre tourne la page (26/11/2026)
+      if ((ev.key === "ArrowLeft" || ev.key === "ArrowRight") && this.lecteur && this.objet && this.objet.etape && !ev.altKey && !ev.ctrlKey && !ev.metaKey && !ev.shiftKey) {
+        ev.preventDefault();
+        this.lecteur.querySelector("iframe").contentWindow.postMessage({ type: "monde:fleche", sens: ev.key === "ArrowRight" ? 1 : -1 }, location.origin);
+      }
+    });
+    addEventListener("message", (ev) => {
+      if (ev.origin !== location.origin) return;
+      if (ev.data === "monde:fermer-fiche") this.fermerLecteur();
+      // la fiche a changé d'étape : le livre ouvert tourne la page (livre.js)
+      else if (ev.data && ev.data.type === "monde:etape" && this.lecteur && this.objet && this.objet.etape) this.objet.etape(ev.data.k, ev.data.anime);
+    });
     this.jeton = 0;
     this.suivreAdresse();
   }
@@ -189,8 +202,10 @@ class Accueil {
     const ancien = this.objet, ancienne = this.couche;
     // d'un globe à un globe : le nouveau part de l'image exacte de l'ancien et vole jusqu'à la sienne (un vrai zoom)
     const Classe = { plan: Plan, livre: Livre }[cfg.type] || Globe;
-    const vol = Classe === Globe && !!ancien && !!ancien.etatVue && !calme();
-    appli.depuis = vol ? ancien.etatVue() : null;
+    // (le livre ouvert sur sa dernière page, la Terre d'aujourd'hui, donne aussi un point de départ : le globe part du
+    // dessin ; sinon il n'en donne pas, 26/11/2026)
+    appli.depuis = Classe === Globe && ancien && ancien.etatVue && !calme() ? ancien.etatVue() : null;
+    const vol = !!appli.depuis;
     const [cfgVu, donneesVues] = this.filtrer(id, cfg, donnees);
     const objet = new Classe(couche, cfgVu, donneesVues, appli);
     this.objet = objet; this.couche = couche;

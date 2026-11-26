@@ -103,7 +103,9 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 .livre:focus-visible { outline: 2px solid var(--choix); outline-offset: 8px; border-radius: 6px; }
 .livre svg.dessin { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 /* le bloc des pages, un peu plus grand que la couverture à droite et en bas : l'épaisseur du livre */
-.livre .feuille { position: absolute; left: 6px; top: 5px; width: 301px; height: 401px; z-index: 0; }
+/* (26/11/2026 : il dépassait de 6 px à droite et en bas, « bizarre pour un truc en 2D » : un peu plus petit, caché sous la
+   couverture fermée, comme les pages d'un vrai livre vu de face ; dessin-livre.js, BLOC) */
+.livre .feuille { position: absolute; left: 3px; top: 4px; width: 301px; height: 401px; z-index: 0; transform: scale(.975); transform-origin: 0 0; }
 .livre .couv { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.45,0,.25,1); }
 /* tout est dessiné sur la face et l'intérieur (rien sur la couverture elle-même) : sinon le navigateur hésite entre deux
    couches au même endroit ; pas de décalage en profondeur, qui grossit la face d'un rien et rend les os flous */
@@ -114,12 +116,30 @@ html.carte, html.carte body { height: 100%; overflow: hidden; }
 /* les fausses lignes (26/11/2026) : des traits arrondis, paragraphes finis par une ligne plus courte */
 .livre .lignes { position: absolute; display: flex; flex-direction: column; gap: 11px; z-index: 1; }
 .livre .feuille .lignes { inset: 48px 38px 44px 32px; }
-.livre .dedans .lignes { inset: 48px 32px 44px 38px; }
+.livre .dedans .lignes { inset: 50.8px 34.2px 47.9px 40.6px; }   /* le miroir de celles de droite (dessin-livre.js, MIROIR) */
 .livre .lignes i { display: block; height: 5px; border-radius: 3px; background: rgb(70 48 28 / .22); }
 .livre .lignes b { display: block; height: 7px; }
+/* la frise dorée sous le titre, et le dessin de l'étape sur la page de droite (26/11/2026, livre.js) */
+.livre .cadre .motif { display: block; flex: none; }
+.livre .planche { position: absolute; left: 33px; top: 50px; width: 230px; height: 300px; z-index: 1; }
+/* sur la dernière page, la Terre dessinée (centre 148, 200, rayon 82 sur la page) mène à la Terre ; rien ne bouge au survol */
+.livre .vers-terre { position: absolute; left: 66px; top: 118px; width: 164px; height: 164px; z-index: 2; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.livre .vers-terre:focus-visible { outline: 2px solid var(--choix); outline-offset: 4px; }
+/* la feuille qui tourne : à côté de la couverture, jamais dedans (deux couches au même endroit se cachent au hasard) ;
+   un recto au même endroit que la page de droite, un verso au même endroit que la page de gauche */
+.livre .tourne { position: absolute; inset: 0; z-index: 2; transform-origin: left center; transform-style: preserve-3d; pointer-events: none; transition: transform 1.3s cubic-bezier(.45,0,.25,1); }
+.livre .tourne[hidden] { display: none; }
+.livre .tourne .recto { position: absolute; left: 3px; top: 4px; width: 301px; height: 401px; transform: scale(.975); transform-origin: 0 0; backface-visibility: hidden; }
+.livre .tourne .verso { position: absolute; inset: 0; backface-visibility: hidden; transform: rotateY(180deg); }
+.livre .tourne .verso .lignes { inset: 50.8px 34.2px 47.9px 40.6px; }
+/* la feuille s'assombrit un peu en se levant (elle prend moins de lumière), puis s'éclaircit en se posant */
+.livre .tourne .recto::after, .livre .tourne .verso::after { content: ""; position: absolute; z-index: 3; background: rgb(48 30 14 / .28); border-radius: 2px; opacity: 0; animation: feuille-ombre 1.3s ease-in-out; }
+.livre .tourne .recto::after { left: 0; top: 0; width: 295px; height: 396px; }
+.livre .tourne .verso::after { left: 9.4px; top: 4px; width: 287.6px; height: 386.1px; }
+@keyframes feuille-ombre { 50% { opacity: 1; } }
 /* rien ne bouge au survol (26/11/2026) : seule la main du pointeur dit qu'on peut cliquer */
 .livre.ouvert .couv { transform: rotateY(-172deg); }
-@media (prefers-reduced-motion: reduce) { .livre, .livre .couv { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .livre, .livre .couv, .livre .tourne { transition: none; } .livre .tourne .recto::after, .livre .tourne .verso::after { animation: none; } }
 
 /* Le haut de l'écran */
 .cap { position: absolute; top: 18px; width: max-content; display: flex; gap: 2px; align-items: center; padding: 5px; background: var(--surface); border-radius: 12px; box-shadow: var(--ombre); z-index: 5; }
